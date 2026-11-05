@@ -55,3 +55,9 @@ All placeholder copy is marked `TODO` in `src/data/site.ts`. Sample posts and ep
 - [ ] Production domain (`astro.config.mjs` → `site`)
 
 Optional sections (Selected voices, Downloads, Showreel, Story, Newsletter) hide automatically while their arrays in `site.ts` are empty.
+
+## Deployment (Vercel)
+
+The Vercel project deploys this repository automatically. In **Settings → Environments → Production → Branch Tracking**, the production branch must be the branch this site is developed on (currently `claude/determined-hypatia-1fja1q`). Pushes to any other branch create Preview deployments only.
+
+To put a specific build live by hand: **Deployments → ⋯ on that build → Promote to Production**. Avoid **Redeploy** on an old Production row: it rebuilds that same old commit.
