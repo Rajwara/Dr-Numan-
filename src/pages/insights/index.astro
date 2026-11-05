@@ -5,7 +5,7 @@ import PageHeader from '../../components/PageHeader.astro';
 import PostCard from '../../components/PostCard.astro';
 import Media from '../../components/Media.astro';
 import Button from '../../components/Button.astro';
-import { byDate, fmtDate, readingTime } from '../../scripts/util';
+import { byDate, fmtDate, readingTime, postImage } from '../../scripts/util';
 
 const posts = (await getCollection('insights')).sort(byDate);
 const featured = posts.find((p) => p.data.pinned) ?? posts[0];
@@ -23,7 +23,7 @@ const PER_PAGE = 9;
   {featured && (
     <section class="container">
       <a class="feat zoom" href={`/insights/${featured.id}/`} data-category={featured.data.category} data-cursor="Read">
-        <div data-clip><Media src={featured.data.image} alt={featured.data.imageAlt} label="Featured post image" ratio="16 / 10" eager /></div>
+        <div data-clip><Media src={postImage(featured.data)} alt={featured.data.imageAlt ?? ''} label="Featured post image" ratio="16 / 10" eager /></div>
         <div class="feat__body reveal">
           <span class="tag tag--accent">{featured.data.pinned ? 'Pinned' : 'Latest'} · {featured.data.category}</span>
           <h2 class="h2">{featured.data.title}</h2>

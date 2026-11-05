@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import PageHeader from '../components/PageHeader.astro';
-import { site, socials, speakingTopics, downloads } from '../data/site';
+import { site, socials, speakingTopics, downloads, defaultImages } from '../data/site';
 const types = [
   { value: 'media', label: 'Media' },
   { value: 'speaking', label: 'Speaking and events' },
@@ -14,7 +14,8 @@ const types = [
     eyebrow="Contact"
     title="Get in touch"
     summary="Enquiries are handled by his office and answered within three working days. (Placeholder: confirm response time and who handles enquiries.)"
-    showImage={false}
+    image={defaultImages.contact}
+    imageAlt="A writing desk at dusk with a sealed letter and a cricket ball"
   />
 
   <section class="section" style="padding-top:0">

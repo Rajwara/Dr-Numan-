@@ -4,7 +4,7 @@ import Base from '../../layouts/Base.astro';
 import Media from '../../components/Media.astro';
 import PostCard from '../../components/PostCard.astro';
 import Button from '../../components/Button.astro';
-import { byDate, fmtDate, readingTime } from '../../scripts/util';
+import { byDate, fmtDate, readingTime, postImage } from '../../scripts/util';
 
 export async function getStaticPaths() {
   const posts = await getCollection('insights');
@@ -39,7 +39,7 @@ const isGuest = d.author !== 'Dr. Nauman Niaz';
       </div>
     </header>
     <div class="container post-hero" data-clip>
-      <Media src={d.image} alt={d.imageAlt} label="Post hero image" ratio="21 / 9" eager />
+      <Media src={postImage(d)} alt={d.imageAlt ?? ''} label="Post hero image" ratio="21 / 9" eager />
     </div>
 
     <div class="container post-body">

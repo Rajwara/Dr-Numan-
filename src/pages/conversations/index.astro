@@ -5,7 +5,7 @@ import PageHeader from '../../components/PageHeader.astro';
 import EpisodeCard from '../../components/EpisodeCard.astro';
 import YouTube from '../../components/YouTube.astro';
 import Button from '../../components/Button.astro';
-import { subscribeLinks } from '../../data/site';
+import { subscribeLinks, defaultImages } from '../../data/site';
 import { byDate, fmtDate } from '../../scripts/util';
 
 const eps = (await getCollection('conversations')).sort(byDate);
@@ -16,7 +16,7 @@ const series = [...new Set(eps.map((e) => e.data.series))];
 const SERIES_TITLE = 'Conversations';
 ---
 <Base title={SERIES_TITLE} description="Conversations with cricketers and friends of the game, hosted by Dr. Nauman Niaz. Watch on YouTube or listen as a podcast.">
-  <PageHeader eyebrow="Podcast & vlog" title={SERIES_TITLE} summary="Long-form conversations with cricketers and friends of the game." showImage={false}>
+  <PageHeader eyebrow="Podcast & vlog" title={SERIES_TITLE} summary="Long-form conversations with cricketers and friends of the game." image={defaultImages.podcastCover} imageAlt="A vintage studio microphone and a cricket ball">
     <div class="btn-row">
       {subscribeLinks.map((s, i) => (
         <Button href={s.url} variant={i === 0 ? 'dark' : 'ghost'} size="sm" external>{s.label}</Button>
@@ -29,10 +29,10 @@ const SERIES_TITLE = 'Conversations';
       <div class="container feat-ep__grid">
         <div class="feat-ep__player" data-clip>
           {latest.data.format === 'Video'
-            ? <YouTube id={latest.data.youtubeId} title={latest.data.title} thumbnail={latest.data.thumbnail} />
+            ? <YouTube id={latest.data.youtubeId} title={latest.data.title} thumbnail={latest.data.thumbnail ?? (latest.data.youtubeId ? undefined : defaultImages.episode)} />
             : latest.data.audioUrl
               ? <audio controls preload="none" src={latest.data.audioUrl}></audio>
-              : <YouTube title={latest.data.title} />}
+              : <YouTube title={latest.data.title} thumbnail={defaultImages.episode} />}
         </div>
         <div class="feat-ep__body reveal">
           <span class="tag tag--accent">Latest episode · {latest.data.format}</span>

@@ -84,25 +84,25 @@ export const pillars = [
     title: 'Broadcasting',
     text: 'Decades on air: hosting, commentary and interviews with the people who shaped the game.',
     href: '/broadcasting/',
-    image: '', // e.g. '/images/broadcasting-hero.jpg'
+    image: '/images/pillar-broadcasting.webp',
   },
   {
     title: 'Publications',
     text: 'Books, columns and essays on cricket, medicine and the history that connects them.',
     href: '/publications/',
-    image: '',
+    image: '/images/pillar-publications.webp',  // illustrative (AI)
   },
   {
     title: 'Medicine & Academia',
     text: 'Sports medicine practice, research and teaching, written for peers and institutions.',
     href: '/medicine-academia/',
-    image: '',
+    image: '/images/pillar-medicine.webp',  // illustrative (AI)
   },
   {
     title: 'Memorabilia',
     text: 'A private collection of cricket history, now on view at the museum.',
     href: '/memorabilia/',
-    image: '',
+    image: '/images/pillar-memorabilia.webp',  // illustrative (AI) — replace with a real collection photo when available
   },
 ];
 
@@ -209,7 +209,7 @@ export const programmes = [
     years: '', // TODO: years on air
     format: 'Studio analysis',
     text: 'His signature cricket show on PTV Sports, with Shoaib Akhtar and Rashid Latif on the panel and post-match guests from across the game.',
-    image: '',
+    image: '/images/programme-game-on-hai.webp', // illustrative; replace with a real still of the show
   },
   {
     title: 'Cricket host & analyst',
@@ -217,7 +217,7 @@ export const programmes = [
     years: '1992 – present',
     format: 'Studio analysis & live coverage',
     text: 'More than three decades presenting and analysing international and domestic cricket on national television.',
-    image: '',
+    image: '/images/programme-ptv.webp', // illustrative; replace with a real still
   },
   // TODO: add other named programmes / series with their years
 ];
@@ -365,6 +365,20 @@ export const expertise = [
 ];
 
 /** Memorabilia 2.0: 8–12 hero photos with one-line captions (approved). */
+/** Default artwork: used wherever a post or episode has no image of its own. */
+export const defaultImages = {
+  insight: {
+    Cricket: '/images/insight-cricket.webp',
+    History: '/images/insight-history.webp',
+    Medicine: '/images/insight-medicine.webp',
+    Guest: '/images/insight-guest.webp',
+  } as Record<string, string>,
+  episode: '/images/episode-bg.webp',
+  podcastCover: '/images/podcast-cover.webp',
+  museumBand: '/images/museum-band.webp',
+  contact: '/images/contact-bg.webp',
+};
+
 export const memorabilia = [
   // TODO: photos from the museum; captions approved by Dr. Niaz
   { caption: 'Item: whose, which year', image: '', tall: true },

@@ -6,6 +6,7 @@ import Media from '../../components/Media.astro';
 import EpisodeCard from '../../components/EpisodeCard.astro';
 import Button from '../../components/Button.astro';
 import { byDate, fmtDate } from '../../scripts/util';
+import { defaultImages } from '../../data/site';
 
 export async function getStaticPaths() {
   const eps = await getCollection('conversations');
@@ -26,10 +27,10 @@ const others = (await getCollection('conversations')).sort(byDate).filter((e) =>
 
   <!-- One player, not both. Embed is lazy-loaded. -->
   <section class="container ep-player" data-clip>
-    {d.format === 'Video' && <YouTube id={d.youtubeId} title={d.title} thumbnail={d.thumbnail} />}
+    {d.format === 'Video' && <YouTube id={d.youtubeId} title={d.title} thumbnail={d.thumbnail ?? (d.youtubeId ? undefined : defaultImages.episode)} />}
     {d.format === 'Audio' && (d.audioUrl
       ? <div class="audio"><audio controls preload="none" src={d.audioUrl}></audio></div>
-      : <Media label="Audio player: add audioUrl" ratio="21 / 6" dark />)}
+      : <Media src={defaultImages.episode} alt="" label="Audio player: add audioUrl" ratio="21 / 6" dark />)}
   </section>
 
   <section class="section ep-body container">

@@ -1,11 +1,11 @@
 ---
 import Media from './Media.astro';
-import { readingTime, fmtDate } from '../scripts/util';
+import { readingTime, fmtDate, postImage } from '../scripts/util';
 const { post, showImage = true } = Astro.props;
 const d = post.data;
 ---
 <a class="card post-card" href={`/insights/${post.id}/`} data-category={d.category}>
-  {showImage && <Media src={d.image} alt={d.imageAlt} label="Post image" ratio="16 / 10" />}
+  {showImage && <Media src={postImage(d)} alt={d.imageAlt ?? ''} label="Post image" ratio="16 / 10" />}
   <div class="card__body">
     <span class:list={['tag', d.category === 'Guest' && 'tag--accent']}>{d.category}</span>
     <h3 class="h3">{d.title}</h3>

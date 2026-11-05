@@ -1,8 +1,9 @@
 ---
 import Media from './Media.astro';
+import { defaultImages } from '../data/site';
 const { ep } = Astro.props;
 const d = ep.data;
-const thumb = d.thumbnail || (d.youtubeId ? `https://i.ytimg.com/vi/${d.youtubeId}/hqdefault.jpg` : undefined);
+const thumb = d.thumbnail || (d.youtubeId ? `https://i.ytimg.com/vi/${d.youtubeId}/hqdefault.jpg` : defaultImages.episode);
 ---
 <a class="card ep-card" href={`/conversations/${ep.id}/`} data-guest={d.guest} data-series={d.series}>
   <div class="ep-card__thumb">
