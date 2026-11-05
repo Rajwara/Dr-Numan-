@@ -13,13 +13,13 @@ export const site = {
   name: 'Dr. Nauman Niaz',
   shortName: 'Niaz',
   // TODO: descriptor line to be approved by Dr. Niaz (Home sheet, 1.0)
-  descriptor: 'Sports physician, broadcaster, author and cricket historian.',
-  // TODO: 50-word bio, used in footer and meta
+  descriptor: 'Physician, broadcaster, author and cricket historian.',
+  // TODO: confirm 50-word bio, used in footer and meta
   shortBio:
-    'Dr. Nauman Niaz is a sports physician, broadcaster, author and cricket historian whose work spans the clinic, the commentary box, the archive and the lecture hall.',
+    'Dr. Nauman Niaz is a physician, broadcaster, author and cricket historian. A clinical endocrinologist, he has analysed cricket on PTV since 1992, led PTV Sports, and written more than a dozen books on the game.',
   // Home hero banner: /public/images/hero-desktop-*.{webp,jpg} and hero-mobile-*.{webp,jpg}
   aboutPortrait: '', // TODO: second, environmental portrait (studio, clinic or library)
-  location: 'Pakistan', // TODO confirm city for the hero "Based in" line
+  location: 'Islamabad, Pakistan',
   timezone: 'Asia/Karachi',
   email: 'office@drnaumanniaz.com', // TODO: confirm which email to publish
   museum: {
@@ -46,8 +46,9 @@ export const socials = [
   { label: 'LinkedIn', url: 'https://www.linkedin.com/in/dr-nauman-niaz-b53930165/' },
   { label: 'Instagram', url: 'https://www.instagram.com/dr.naumanniaz/' },
   { label: 'Facebook', url: 'https://www.facebook.com/DrNaumaNiaz/' },
-  // TODO: add YouTube and X / Twitter if he has public profiles
-]
+  { label: 'X / Twitter', url: 'https://x.com/DrNaumanNiaz' },
+  // TODO: add a YouTube channel when Conversations launches
+];
 
 export const subscribeLinks = [
   // TODO: Conversations subscribe links
@@ -71,12 +72,10 @@ export const nav = [
 
 /** Home 2.0: credentials strip. Plain text, 4–6 facts, numbers from CV. */
 export const credentials = [
-  // TODO: all numbers from CV
   { value: '34+', label: 'Years in broadcasting' }, // PTV since 1992
-  { value: '10', label: 'Books published' },
-  { value: '500+', label: 'Articles written' },
-  { value: '6', label: 'Academic appointments' },
-  { value: '15', label: 'Countries covered' },
+  { value: '19', label: 'Books published' }, // Myth & Reality (2026) described as his 19th book
+  { value: '24+', label: 'Years in clinical practice' }, // since 2002
+  { value: '2014', label: 'Tamgha-i-Imtiaz' },
 ];
 
 /** Home 3.0: four pillars. Images reuse the page hero images. */
@@ -109,41 +108,76 @@ export const pillars = [
 
 /** Home 6.0 (optional) + Publications 2.0 */
 export const books = [
-  // TODO: covers, titles, publishers, years, synopses and purchase links from Dr. Niaz
+  // Sourced from press coverage (CricketWeb, Dawn, ProPakistani, JournalismPakistan).
+  // TODO: add cover images, purchase links and the remaining titles (19 in total).
   {
-    title: 'Book title one',
-    publisher: 'Publisher',
-    year: '2024',
-    synopsis:
-      'A two-to-three line synopsis of the book goes here, describing its subject, its scope and why it matters to readers of cricket history.',
+    title: 'Myth & Reality: Type II Diabetes & Disease Impact in Pakistan',
+    publisher: 'Launched with Getz Pharma',
+    year: '2026',
+    synopsis: 'A study of type 2 diabetes and its impact on health in Pakistan, drawing on his work as a clinical endocrinologist.',
     cover: '',
     featured: true,
-    buy: [
-      { label: 'Amazon', url: 'https://amazon.com/' },
-      { label: 'Local bookseller', url: '#' },
-    ],
-    excerpt: '', // optional link to a PDF excerpt or an Insights post
-  },
-  {
-    title: 'Book title two',
-    publisher: 'Publisher',
-    year: '2019',
-    synopsis:
-      'A two-to-three line synopsis of the book goes here, describing its subject, its scope and why it matters to readers.',
-    cover: '',
-    featured: false,
-    buy: [{ label: 'Amazon', url: 'https://amazon.com/' }],
+    buy: [] as { label: string; url: string }[],
     excerpt: '',
   },
   {
-    title: 'Book title three',
-    publisher: 'Publisher',
-    year: '2012',
-    synopsis:
-      'A two-to-three line synopsis of the book goes here, describing its subject, its scope and why it matters to readers.',
+    title: 'Heritage & Legacy: 1950s',
+    publisher: 'Boundary Books',
+    year: '2026',
+    synopsis: 'Pakistan cricket in its first full decade, with profiles of all 35 players who represented Pakistan in Tests during the 1950s.',
     cover: '',
     featured: false,
-    buy: [{ label: 'Amazon', url: 'https://amazon.com/' }],
+    buy: [] as { label: string; url: string }[],
+    excerpt: '',
+  },
+  {
+    title: 'The Cricket Conversations',
+    publisher: '',
+    year: '2025',
+    synopsis: 'Interviews with 52 figures from the game, opening with C. L. R. James.',
+    cover: '',
+    featured: false,
+    buy: [] as { label: string; url: string }[],
+    excerpt: '',
+  },
+  {
+    title: 'In a Different Realm: Story of Quadruple and Triple Centuries 1876–2025',
+    publisher: 'Privately published',
+    year: '2025',
+    synopsis: 'The history of cricket’s quadruple and triple centuries, from 1876 to 2025.',
+    cover: '',
+    featured: false,
+    buy: [] as { label: string; url: string }[],
+    excerpt: '',
+  },
+  {
+    title: 'Collector’s Eye',
+    publisher: 'Boundary Books',
+    year: '2021',
+    synopsis: 'Two volumes and nearly a thousand pages presenting his collection of cricket memorabilia in full-colour photographs.',
+    cover: '',
+    featured: false,
+    buy: [] as { label: string; url: string }[],
+    excerpt: '',
+  },
+  {
+    title: 'Pakistan Cricket: The Story of Betrayal',
+    publisher: '',
+    year: '2010', // TODO: approved synopsis
+    synopsis: 'An account of Pakistan cricket and the forces that shaped it.',
+    cover: '',
+    featured: false,
+    buy: [] as { label: string; url: string }[],
+    excerpt: '',
+  },
+  {
+    title: 'The Fluctuating Fortunes',
+    publisher: 'Pakistan Cricket Board',
+    year: '2005', // TODO: sources give 2005 or 2007, and four or five volumes; confirm
+    synopsis: 'The multi-volume history of Pakistan cricket commissioned by the Pakistan Cricket Board.',
+    cover: '',
+    featured: false,
+    buy: [] as { label: string; url: string }[],
     excerpt: '',
   },
 ];
@@ -163,24 +197,20 @@ export const articles: { title: string; outlet: string; date: string; topic: 'Cr
  * Academic papers: listed ONCE, on Medicine & Academia (spreadsheet: "Do not list in both places").
  * Publications links across to that section instead.
  */
-export const papers = [
-  // TODO: citations, journal, year, DOI
-  {
-    citation: 'Niaz N, Co-author A. Title of the research paper on athlete injury prevention.',
-    journal: 'Journal name',
-    year: '2022',
-    doi: 'https://doi.org/10.0000/placeholder',
-  },
-  {
-    citation: 'Niaz N. Title of a second paper on sports medicine in cricket.',
-    journal: 'Journal name',
-    year: '2018',
-    doi: 'https://doi.org/10.0000/placeholder',
-  },
+export const papers: { citation: string; journal: string; year: string; doi: string }[] = [
+  // TODO: add selected papers (citation, journal, year, DOI link). Section hides while empty.
 ];
 
 /** Broadcasting 2.0. No channel logos without permission. */
 export const programmes = [
+  {
+    title: 'Game On Hai',
+    channel: 'PTV Sports',
+    years: '', // TODO: years on air
+    format: 'Studio analysis',
+    text: 'His signature cricket show on PTV Sports, with Shoaib Akhtar and Rashid Latif on the panel and post-match guests from across the game.',
+    image: '',
+  },
   {
     title: 'Cricket host & analyst',
     channel: 'PTV (Pakistan Television)',
@@ -189,18 +219,16 @@ export const programmes = [
     text: 'More than three decades presenting and analysing international and domestic cricket on national television.',
     image: '',
   },
-  // TODO: add named programmes / series with their years
-]
+  // TODO: add other named programmes / series with their years
+];
 
 /** Broadcasting 3.0. Where no clip exists, show name only (leave link empty). */
 export const interviews = [
-  // TODO
-  { name: 'Guest name', role: 'Former Test captain', year: '2016', link: '' },
-  { name: 'Guest name', role: 'Fast bowler', year: '2014', link: '' },
-  { name: 'Guest name', role: 'Commentator', year: '2012', link: '' },
-  { name: 'Guest name', role: 'Cricket administrator', year: '2010', link: '' },
-  { name: 'Guest name', role: 'Batting great', year: '2008', link: '' },
-  { name: 'Guest name', role: 'Coach', year: '2006', link: '' },
+  // Post-match guests on Game On Hai (PTV Sports). TODO: add years, clip links and more names.
+  { name: 'Sir Vivian Richards', role: 'West Indies batting great', year: '', link: '' },
+  { name: 'David Gower', role: 'Former England captain', year: '', link: '' },
+  { name: 'Sana Mir', role: 'Former Pakistan women’s captain', year: '', link: '' },
+  { name: 'Umar Gul', role: 'Former Pakistan fast bowler', year: '', link: '' },
 ];
 
 /** Broadcasting 4.0 (optional): YouTube IDs of showreel clips. Leave empty to hide. */
@@ -218,23 +246,30 @@ export const qualifications = [
   { title: 'CCST in Endocrinology', institution: 'United Kingdom', year: '' },
   { title: 'MSc Biomechanics', institution: 'University of Western Australia (UWA)', year: '' },
   { title: 'MRCP', institution: 'United Kingdom', year: '' },
-  { title: 'MBBS', institution: 'PB', year: '' }, // TODO: confirm the full institution name for "PB"
-]
+  { title: 'MBBS', institution: 'Rawalpindi Medical College (University of the Punjab)', year: '' }, // TODO: confirm (source: Oladoc profile)
+];
 
 /** About 4.0: 15–25 entries, colour-coded by field. */
 export type Field = 'Medicine' | 'Broadcasting' | 'Writing' | 'Academia';
 export const timeline: { year: string; title: string; text: string; field: Field }[] = [
-  // From his experience (LinkedIn). TODO: add milestones in writing and academia from the CV (15–25 entries in total).
+  // From his LinkedIn experience and press coverage. TODO: confirm with CV.
   { year: '1992', title: 'Cricket host & analyst, PTV', text: 'Begins a broadcasting career on Pakistan Television that continues today.', field: 'Broadcasting' },
   { year: '1998', title: 'Manager Coordination, Asian Cricket Council', text: 'Media coordination for the Pakistan Cricket Board and the Asian Cricket Council.', field: 'Broadcasting' },
-  { year: '1999', title: 'Media Manager, Pakistan Cricket Board', text: 'Media manager and cricket analyst for the PCB, Lahore.', field: 'Broadcasting' },
-  { year: '2002', title: 'Clinical Endocrinologist', text: 'Begins clinical practice at the Mahmooda Niaz Clinic.', field: 'Medicine' },
+  { year: '1999', title: 'Media Manager, Pakistan Cricket Board', text: 'Joins the PCB in Lahore as media manager.', field: 'Broadcasting' },
+  { year: '2000', title: 'Associate Manager, Pakistan team', text: 'Tours the UAE, West Indies, Bangladesh and Sri Lanka with the national side.', field: 'Broadcasting' },
+  { year: '2001', title: 'Pakistan’s first cricket analyst', text: 'Sets up the team’s analysis wing, first used on the tour of New Zealand.', field: 'Academia' },
+  { year: '2002', title: 'Clinical Endocrinologist', text: 'Begins clinical practice at the Mahmooda Niaz Clinic, Islamabad.', field: 'Medicine' },
+  { year: '2005', title: 'The Fluctuating Fortunes', text: 'His multi-volume history of Pakistan cricket, commissioned by the PCB.', field: 'Writing' },
+  { year: '2010', title: 'Pakistan Cricket: The Story of Betrayal', text: 'Published.', field: 'Writing' },
   { year: '2012', title: 'Head of Content, PTV', text: 'Leads content for Pakistan Television.', field: 'Broadcasting' },
-  { year: '2013', title: 'Head of Operations & Content, PTV', text: 'Takes on operations alongside content.', field: 'Broadcasting' },
   { year: '2014', title: 'Director Sports, PTV Sports', text: 'Channel head of PTV Sports until 2022.', field: 'Broadcasting' },
+  { year: '2014', title: 'Tamgha-i-Imtiaz', text: 'Awarded for sports journalism and broadcasting.', field: 'Broadcasting' },
   { year: '2018', title: 'Director, PTV Training Academy', text: 'Leads the broadcaster’s training academy in Islamabad.', field: 'Academia' },
+  { year: '2021', title: 'Collector’s Eye', text: 'Two-volume book on his memorabilia collection (Boundary Books).', field: 'Writing' },
   { year: '2024', title: 'Director Special Assignments, PTV', text: 'Current role, Islamabad.', field: 'Broadcasting' },
-]
+  { year: '2025', title: 'Sports Editor, JournalismPakistan', text: 'Joins JournalismPakistan.com and publishes The Cricket Conversations.', field: 'Writing' },
+  { year: '2026', title: 'Myth & Reality', text: 'His 19th book, on type 2 diabetes in Pakistan.', field: 'Medicine' },
+];
 
 /** About: experience, grouped by organisation (from his LinkedIn profile). */
 export const experience: {
@@ -267,7 +302,7 @@ export const experience: {
     org: 'Pakistan Cricket Board',
     span: '1998 – 2001',
     roles: [
-      { title: 'Media Manager', dates: '1999 – 2001', place: 'Lahore', text: 'Cricket analyst of the Pakistan Cricket Board.' },
+      { title: 'Media Manager / Cricket Analyst', dates: '1999 – 2001', place: 'Lahore', text: 'Media manager, then associate manager of the Pakistan team on its 2000 tours, before setting up the board’s cricket analyst wing.' },
       {
         title: 'Manager Coordination, Asian Cricket Council',
         dates: '1998 – 1999',
@@ -276,14 +311,12 @@ export const experience: {
       },
     ],
   },
-]
+];
 
 /** About 5.0 */
 export const honours = [
-  // TODO: from CV. If none are public, empty this array and the section hides.
-  { title: 'Tamgha-i-Imtiaz (TI)', body: 'Government of Pakistan', year: '' }, // TODO: confirm year
-  { title: 'Honorary position', body: 'Institution', year: '0000' },
-  { title: 'Notable appointment', body: 'Organisation', year: '0000' },
+  { title: 'Tamgha-i-Imtiaz (TI)', body: 'For sports journalism and broadcasting', year: '2014' },
+  // TODO: other awards or honorary positions from the CV
 ];
 
 /** Home 8.0 / About 6.0 (optional). Needs written permission. Empty = hidden. */
@@ -298,38 +331,37 @@ export const downloads: { label: string; href: string; meta: string }[] = [
 
 /** About 2.0: biography sections (600-word bio, edited for web by Penaxis). */
 export const biography = [
-  // TODO: replace with the approved 600-word biography
-  { heading: 'Early life and education', body: ['Placeholder paragraph. A short account of his early years, schooling and the path into medicine.'] },
-  { heading: 'Medicine', body: ['Placeholder paragraph. His training and practice as a sports physician, and the teams and boards he has served.'] },
-  { heading: 'Broadcasting', body: ['Placeholder paragraph. How he came to broadcasting and the programmes that defined his on-air career.'] },
-  { heading: 'Writing and history', body: ['Placeholder paragraph. His books and columns, and the historian’s work of recording the game.'] },
-  { heading: 'Academia', body: ['Placeholder paragraph. Appointments, teaching and research.'] },
-  { heading: 'Present day', body: ['Placeholder paragraph. What he is focused on now, including Conversations and the museum.'] },
+  // Drafted from public sources. TODO: check against / replace with his approved 600-word biography.
+  { heading: 'Early life and education', body: ['Born in 1969, he qualified in medicine (MBBS) and trained at Holy Family Hospital, Rawalpindi, before postgraduate study in the United Kingdom and Australia: MRCP and a CCST in endocrinology in the UK, an MSc in biomechanics and a PhD at the University of Western Australia, and postdoctoral work at Oxford.'] },
+  { heading: 'Medicine', body: ['A Fellow of the Royal Colleges of Physicians of London, Glasgow, Edinburgh and Ireland, he has practised as a clinical endocrinologist at the Mahmooda Niaz Clinic in Islamabad since 2002. In 2026 he published Myth & Reality, a study of type 2 diabetes in Pakistan.'] },
+  { heading: 'Broadcasting', body: ['He has analysed cricket on Pakistan Television since 1992. He went on to lead PTV’s content and operations, served as Director Sports and channel head of PTV Sports from 2014 to 2022, and hosted the cricket show Game On Hai. Since 2024 he has been PTV’s Director Special Assignments.'] },
+  { heading: 'Cricket administration', body: ['At the Pakistan Cricket Board from 1998 he worked as media coordinator, media manager and associate manager of the national team on its 2000 tours, and in 2001 became the team’s first cricket analyst.'] },
+  { heading: 'Writing and history', body: ['His books include The Fluctuating Fortunes, the history of Pakistan cricket commissioned by the PCB; Pakistan Cricket: The Story of Betrayal; Collector’s Eye; The Cricket Conversations; and Heritage & Legacy: 1950s. He became Sports Editor of JournalismPakistan.com in 2025.'] },
+  { heading: 'Present day', body: ['He was awarded the Tamgha-i-Imtiaz in 2014 for sports journalism and broadcasting. Today he combines clinical practice, broadcasting and writing with his collection of cricket memorabilia, which he began at the age of twelve.'] },
 ];
 
 /** Medicine & Academia */
 export const medicalPractice = [
   // No patient information of any kind.
-  { role: 'Specialisation', detail: 'Clinical endocrinology', years: '' },
-  { role: 'Clinical Endocrinologist', detail: 'Mahmooda Niaz Clinic, Pakistan', years: '2002 – present' },
+  { role: 'Specialisation', detail: 'Endocrinology and internal medicine', years: '' },
+  { role: 'Clinical Endocrinologist', detail: 'Mahmooda Niaz Clinic, F-8 Markaz, Islamabad', years: '2002 – present' },
   // TODO: add teams or boards served as physician, with years
-]
+];
 export const appointments = [
-  { title: 'Professor', institution: 'University', years: '0000 – present' },
-  { title: 'Visiting lecturer', institution: 'University', years: '0000 – 0000' },
-  { title: 'Doctoral supervisor', institution: 'University', years: '0000 – 0000' },
+  { title: 'Director, Training Academy', institution: 'Pakistan Television (PTV), Islamabad', years: '2018 – 2019' },
+  // TODO: add university appointments from the CV
 ];
 export const lectures: { event: string; topic: string; year: string }[] = [
-  { event: 'Conference name', topic: 'Talk topic', year: '0000' },
-  { event: 'Symposium name', topic: 'Keynote topic', year: '0000' },
+  // TODO: keynotes and conference talks (event, topic, year). Empty = hidden.
 ];
 export const expertise = [
-  'Sports medicine',
-  'Injury prevention',
-  'Athlete performance',
+  'Endocrinology',
+  'Diabetes',
+  'Internal medicine',
+  'Biomechanics',
   'Cricket history',
+  'Cricket analysis',
   'Sports broadcasting',
-  'Medical education',
 ];
 
 /** Memorabilia 2.0: 8–12 hero photos with one-line captions (approved). */
@@ -345,10 +377,10 @@ export const memorabilia = [
   { caption: 'Item: whose, which year', image: '' },
 ];
 export const memorabiliaStory: string[] = [
-  // Optional (Memorabilia 3.0). Empty = hidden.
-  'Placeholder paragraph. How the first piece was acquired and what sparked the collection.',
-  'Placeholder paragraph. How it grew: sources, friendships, auctions and gifts from players.',
-  'Placeholder paragraph. Why it now lives at the museum and what visitors can expect.',
+  // From press coverage (JournalismPakistan). TODO: check wording with Dr. Niaz.
+  'He started collecting at the age of twelve, and the collection has grown with him ever since.',
+  'Its heart is pre-war and Edwardian cricket: signed postcards, autograph sheets and handkerchiefs, alongside a large cricket library and items from beyond the game.',
+  'In 2021 he published Collector’s Eye, two volumes that present the collection in full-colour photographs.',
 ];
 
 /** Contact 5.0 (optional) */

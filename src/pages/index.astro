@@ -14,6 +14,7 @@ const posts = (await getCollection('insights')).sort(byDate);
 const latestEp = episodes[0];
 const featuredBook = books.find((b) => b.featured);
 const word = site.shortName.toUpperCase().split('');
+const isYear = (v: string) => /^\d{4}$/.test(v); // years don't count up
 ---
 <Base
   title={site.name}
@@ -104,7 +105,7 @@ const word = site.shortName.toUpperCase().split('');
     <div class="container">
       <ul class="creds" data-stagger>
         {credentials.map((c) => (
-          <li><strong data-count>{c.value}</strong><span>{c.label}</span></li>
+          <li><strong data-count={isYear(c.value) ? undefined : ''}>{c.value}</strong><span>{c.label}</span></li>
         ))}
       </ul>
     </div>
@@ -365,11 +366,10 @@ const word = site.shortName.toUpperCase().split('');
   .roles__item i { font-style: normal; font-size: .5em; color: var(--accent); }
 
   /* ── CREDENTIALS ── */
-  .creds { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px; }
+  .creds { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 24px; }
   .creds li { display: grid; gap: 4px; padding-top: 18px; border-top: 1px solid var(--ink); }
   .creds strong { font-size: clamp(2.2rem, 4vw, 3.4rem); font-weight: 500; letter-spacing: -0.05em; line-height: 1; font-variant-numeric: tabular-nums; }
   .creds span { color: var(--muted); font-size: .9rem; }
-  @media (max-width: 900px) { .creds { grid-template-columns: repeat(3, 1fr); } }
   @media (max-width: 520px) { .creds { grid-template-columns: repeat(2, 1fr); } }
 
   /* ── PILLARS ── */

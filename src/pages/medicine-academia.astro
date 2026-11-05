@@ -8,7 +8,7 @@ import { medicalPractice, appointments, papers, lectures, expertise } from '../d
   <PageHeader
     eyebrow="Medicine & Academia"
     title="Medicine & Academia"
-    summary="Placeholder two-line summary of his clinical specialisation and academic standing, written for medical peers and universities."
+    summary="Clinical endocrinologist in Islamabad since 2002. FRCP (London, Glasgow, Edinburgh, Ireland), CCST in endocrinology (UK), PhD and MSc in biomechanics (UWA), postdoctoral work at Oxford."
     imageLabel="Clinical or lecture photo"
   />
 
@@ -31,7 +31,7 @@ import { medicalPractice, appointments, papers, lectures, expertise } from '../d
       </div>
 
       <!-- 4.0 RESEARCH & PAPERS -->
-      <div class="ma__block" id="research">
+      {papers.length > 0 && <div class="ma__block" id="research">
         <div class="ma__head"><span class="eyebrow">03 · Research &amp; papers</span><h2 class="h2" data-split>Research</h2></div>
         <ol class="papers" data-stagger>
           {papers.map((p) => (
@@ -41,7 +41,7 @@ import { medicalPractice, appointments, papers, lectures, expertise } from '../d
             </li>
           ))}
         </ol>
-      </div>
+      </div>}
 
       <!-- 5.0 LECTURES (optional) -->
       {lectures.length > 0 && (
