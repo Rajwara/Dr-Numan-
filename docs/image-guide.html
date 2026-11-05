@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Image Guide · Dr. Nauman Niaz website</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,400;0,500;0,600;1,400&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  @page { size: A4; margin: 16mm 15mm 18mm; }
+  :root { --ink:#111113; --ink2:#2a2a2e; --muted:#6c6c72; --line:#dcdcdf; --bg:#f2f2f4; --accent:#e8711c; --deep:#b4581a; --dark:#120f0c; --ok:#2f8f7a; --real:#9a3b2a; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { margin: 0; font-family: 'Inter Tight', Helvetica, Arial, sans-serif; color: var(--ink); font-size: 10pt; line-height: 1.5; }
+  h1, h2, h3 { font-weight: 500; letter-spacing: -0.03em; line-height: 1.1; margin: 0; }
+  em.s { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; color: var(--accent); }
+  code, .mono { font-family: 'JetBrains Mono', monospace; font-size: 8.4pt; }
+  .page { break-before: page; }
+  .page:first-of-type { break-before: auto; }
+  .flow { break-before: auto; }
+
+  /* cover */
+  .cover { height: 255mm; background: var(--dark); color: #fff; border-radius: 6mm; padding: 18mm 16mm; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+  .cover::after { content: ''; position: absolute; right: -40mm; bottom: -60mm; width: 170mm; height: 170mm; background: radial-gradient(closest-side, rgba(232,113,28,.55), transparent); }
+  .cover .eyebrow { font-size: 9pt; letter-spacing: .12em; text-transform: uppercase; color: #c9c3bd; }
+  .cover h1 { font-size: 40pt; margin-top: 50mm; letter-spacing: -0.05em; line-height: .98; }
+  .cover p { color: #c9c3bd; font-size: 12pt; max-width: 120mm; margin-top: 8mm; }
+  .cover .meta { margin-top: auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6mm; position: relative; z-index: 1; font-size: 9pt; color: #c9c3bd; }
+  .cover .meta b { display: block; color: #fff; font-size: 16pt; font-weight: 500; letter-spacing: -0.03em; }
+  .cover .word { position: absolute; left: 10mm; bottom: 30mm; font-size: 120pt; font-weight: 500; letter-spacing: -0.07em; color: rgba(255,255,255,.05); }
+
+  .sec-h { display: flex; align-items: baseline; gap: 4mm; border-bottom: 1.5px solid var(--ink); padding-bottom: 3mm; margin-bottom: 6mm; }
+  .sec-h .n { font-size: 9pt; color: var(--deep); font-weight: 600; }
+  .sec-h h2 { font-size: 20pt; }
+  p { margin: 0 0 3mm; }
+  .lead { font-size: 11pt; color: var(--ink2); }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
+  .box { background: var(--bg); border-radius: 3mm; padding: 5mm; break-inside: avoid; }
+  .box h3 { font-size: 11.5pt; margin-bottom: 2.5mm; }
+  .box ul { margin: 0; padding-left: 4.5mm; }
+  .box li { margin-bottom: 1.2mm; }
+  .box.warn { background: #fbefe6; border-left: 3px solid var(--accent); }
+  .swatches { display: flex; gap: 3mm; margin-top: 3mm; }
+  .sw { flex: 1; border-radius: 2mm; height: 14mm; padding: 2mm; font-size: 7.5pt; display: flex; align-items: flex-end; }
+
+  .prompt { background: var(--dark); color: #f3ede7; border-radius: 3mm; padding: 4mm 5mm; font-family: 'JetBrains Mono', monospace; font-size: 8.3pt; line-height: 1.55; white-space: pre-wrap; break-inside: avoid; }
+  .prompt .lbl { display: block; font-family: 'Inter Tight', sans-serif; font-size: 7.5pt; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.5mm; }
+  .neg { background: #2a2420; color: #d9cfc6; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 8.6pt; }
+  th { text-align: left; font-weight: 600; font-size: 7.8pt; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); border-bottom: 1.5px solid var(--ink); padding: 2mm 2mm; }
+  td { border-bottom: 1px solid var(--line); padding: 2.2mm 2mm; vertical-align: top; }
+  tr { break-inside: avoid; }
+  .pill { display: inline-block; padding: .4mm 2.2mm; border-radius: 10mm; font-size: 7.4pt; font-weight: 600; white-space: nowrap; }
+  .ai { background: #e3f1ec; color: var(--ok); }
+  .rl { background: #f6e3de; color: var(--real); }
+  .dn { background: #e9e9ec; color: var(--muted); }
+  .ratio { display: inline-block; border: 1.2px solid var(--ink); border-radius: 1mm; vertical-align: middle; margin-right: 2mm; background: #fff; }
+
+  /* prompt cards */
+  .card { border: 1px solid var(--line); border-radius: 3mm; padding: 5mm; margin-bottom: 5mm; break-inside: avoid; display: grid; grid-template-columns: 34mm 1fr; gap: 5mm; }
+  .card .shape { display: grid; place-items: center; align-content: start; gap: 2mm; text-align: center; font-size: 8pt; color: var(--muted); }
+  .card .shape .r { background: linear-gradient(160deg, #3a332d, #120f0c); border-radius: 1.5mm; position: relative; }
+  .card .shape .r::after { content: ''; position: absolute; inset: auto 15% 10% 15%; height: 30%; background: radial-gradient(closest-side, rgba(232,113,28,.5), transparent); }
+  .card h3 { font-size: 12.5pt; margin-bottom: 1.5mm; }
+  .card .spec { display: flex; flex-wrap: wrap; gap: 1.5mm 4mm; font-size: 8.4pt; color: var(--ink2); margin-bottom: 3mm; }
+  .card .spec b { font-weight: 600; }
+  .card .note { font-size: 8.4pt; color: var(--muted); margin-top: 2.5mm; }
+  .id { font-family: 'JetBrains Mono', monospace; font-size: 8pt; color: var(--deep); font-weight: 500; }
+
+  .foot { position: fixed; bottom: -11mm; left: 0; right: 0; font-size: 7.5pt; color: var(--muted); display: flex; justify-content: space-between; }
+</style>
+</head>
+<body>
+
+
+<!-- ───────────── COVER ───────────── -->
+<section class="page">
+  <div class="cover">
+    <span class="eyebrow">Dr. Nauman Niaz · Portfolio website</span>
+    <h1>Image guide &amp;<br /><em class="s">AI prompts</em></h1>
+    <p>Every image slot on the website: the exact size to export, the AI prompt to use where AI is appropriate, and which images must be real photographs.</p>
+    <div class="word">NIAZ</div>
+    <div class="meta">
+      <div><b>30</b>image slots</div>
+      <div><b>17</b>AI prompts, ready to paste</div>
+      <div><b>1</b>house style for all of them</div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── 1. HOW TO USE ───────────── -->
+<section class="page">
+  <div class="sec-h"><span class="n">01</span><h2>How to use this guide</h2></div>
+  <p class="lead">Each AI prompt below has two parts: the <b>subject prompt</b> (what is in the picture) and the <b>house style</b> (how it looks). Paste both, in that order, into Midjourney, DALL·E / ChatGPT, Firefly, Ideogram or similar. Always add the negative prompt where the tool supports it.</p>
+
+  <div class="grid2" style="margin-top:6mm">
+    <div class="box">
+      <h3>Workflow</h3>
+      <ul>
+        <li>Find the slot in the <b>master list</b> (section 03).</li>
+        <li>If it is marked <span class="pill ai">AI</span>, copy its prompt from section 04 and add the house style.</li>
+        <li>Set the aspect ratio in the tool (e.g. Midjourney <code>--ar 4:5</code>), then upscale or export at the listed pixel size.</li>
+        <li>Save as <b>JPG or WebP, sRGB</b>, using the exact <b>file name</b> given.</li>
+        <li>Upload to <code>public/images/</code> on GitHub and tell the developer; they connect it and optimise it.</li>
+      </ul>
+    </div>
+    <div class="box warn">
+      <h3>Must be real photographs</h3>
+      <ul>
+        <li><b>Dr. Niaz himself</b>: portraits, on-set and lecture photos.</li>
+        <li><b>Real people</b>: guests, cricketers, guest authors.</li>
+        <li><b>Book covers</b>: the actual published covers.</li>
+        <li><b>Memorabilia items</b>: the captions name real pieces, so the photos must show those pieces.</li>
+      </ul>
+      <p style="margin-top:2.5mm;font-size:8.6pt">AI images of real people, or of objects presented as genuine, would mislead visitors and can damage his credibility. Use AI only for mood and illustration, as marked.</p>
+    </div>
+  </div>
+
+  <div class="sec-h" style="margin-top:9mm"><span class="n">02</span><h2>House style</h2></div>
+  <p>The site is a dark, warm, sepia editorial look with one amber accent, matching the home banner photo. Every AI image should feel like it was shot in the same studio.</p>
+  <div class="swatches">
+    <div class="sw" style="background:#120f0c;color:#fff">#120f0c<br />deep brown-black</div>
+    <div class="sw" style="background:#3a332d;color:#fff">#3a332d<br />warm charcoal</div>
+    <div class="sw" style="background:#a8957f;color:#111">#a8957f<br />sepia mid-tone</div>
+    <div class="sw" style="background:#e7e7e9;color:#111">#e7e7e9<br />page grey</div>
+    <div class="sw" style="background:#e8711c;color:#fff">#e8711c<br />amber accent</div>
+  </div>
+
+  <div class="prompt" style="margin-top:6mm"><span class="lbl">House style · add to the end of every prompt</span>cinematic editorial photograph, warm sepia monochrome colour grade, deep brown-black background (#120f0c), soft single key light from the side, subtle amber (#e8711c) rim light accent, shallow depth of field, fine film grain, quiet minimal composition with generous negative space, premium magazine quality, photorealistic, no text</div>
+
+  <div class="prompt neg" style="margin-top:3mm"><span class="lbl">Negative prompt · use where supported</span>text, letters, numbers, captions, logos, watermarks, brand names, team crests, sponsor marks, faces, recognisable people, celebrities, hands with extra fingers, distorted anatomy, cluttered background, oversaturated colours, neon, cartoon, illustration, 3D render, plastic look, HDR halo</div>
+
+  <div class="grid2" style="margin-top:6mm">
+    <div class="box">
+      <h3>Export settings</h3>
+      <ul>
+        <li>JPG quality 85 or WebP quality 82, sRGB.</li>
+        <li>Under ~600 KB per file; the site re-compresses anyway.</li>
+        <li>Keep the main subject in the centre 60%: the site crops differently on phones and desktops.</li>
+        <li>No text in images: titles are added by the website.</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>Tool tips</h3>
+      <ul>
+        <li><b>Midjourney:</b> add <code>--ar 4:5 --style raw --v 7</code> (change the ratio per slot) and put the negatives after <code>--no</code>.</li>
+        <li><b>ChatGPT / DALL·E:</b> say “aspect ratio 4:5, portrait” in words and repeat “no text, no people”.</li>
+        <li><b>Firefly:</b> Content type Photo, Visual intensity low, and upload the home banner as a <b>Style reference</b>.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── 3. MASTER LIST ───────────── -->
+<section class="page">
+  <div class="sec-h"><span class="n">03</span><h2>Master list of image slots</h2></div>
+  <p style="font-size:8.8pt;color:var(--muted)">Size = recommended export (2× the size shown on screen, for sharp retina displays). <span class="pill ai">AI</span> AI allowed · <span class="pill rl">REAL</span> real photo required · <span class="pill dn">DONE</span> already on the site.</p>
+  <table>
+    <thead><tr><th>#</th><th>Page · slot</th><th>Ratio</th><th>Export size (px)</th><th>Qty</th><th>Source</th><th>File name</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Home · hero banner, desktop</td><td>16:9</td><td>2400 × 1350</td><td>1</td><td><span class="pill dn">DONE</span></td><td class="mono">desktop-banner.png</td></tr>
+      <tr><td>2</td><td>Home · hero banner, mobile</td><td>9:16</td><td>1080 × 1920</td><td>1</td><td><span class="pill dn">DONE</span></td><td class="mono">mobile-banner.png</td></tr>
+      <tr><td>3</td><td>Home · pillar card: Broadcasting</td><td>4:5</td><td>1200 × 1500</td><td>1</td><td><span class="pill ai">AI</span></td><td class="mono">pillar-broadcasting.jpg</td></tr>
+      <tr><td>4</td><td>Home · pillar card: Publications</td><td>4:5</td><td>1200 × 1500</td><td>1</td><td><span class="pill ai">AI</span></td><td class="mono">pillar-publications.jpg</td></tr>
+      <tr><td>5</td><td>Home · pillar card: Medicine &amp; Academia</td><td>4:5</td><td>1200 × 1500</td><td>1</td><td><span class="pill ai">AI</span></td><td class="mono">pillar-medicine.jpg</td></tr>
+      <tr><td>6</td><td>Home · pillar card: Memorabilia</td><td>4:5</td><td>1200 × 1500</td><td>1</td><td><span class="pill rl">REAL</span> pref. / <span class="pill ai">AI</span></td><td class="mono">pillar-memorabilia.jpg</td></tr>
+      <tr><td>7</td><td>Home · memorabilia teaser band</td><td>4:5 + 3:4</td><td>1200 × 1500 (×3), 1200 × 1600 (×1)</td><td>4</td><td><span class="pill rl">REAL</span></td><td class="mono">memo-01.jpg … memo-04.jpg</td></tr>
+      <tr><td>8</td><td>About · page portrait</td><td>4:5</td><td>1600 × 2000</td><td>1</td><td><span class="pill rl">REAL</span></td><td class="mono">about-portrait.jpg</td></tr>
+      <tr><td>9</td><td>Broadcasting · page header</td><td>4:5</td><td>1200 × 1500</td><td>1</td><td><span class="pill rl">REAL</span> pref. / <span class="pill ai">AI</span></td><td class="mono">broadcasting-header.jpg</td></tr>
+      <tr><td>10</td><td>Broadcasting · Game On Hai still</td><td>16:10</td><td>1600 × 1000</td><td>1</td><td><span class="pill rl">REAL</span> pref. / <span class="pill ai">AI</span></td><td class="mono">programme-game-on-hai.jpg</td></tr>
+      <tr><td>11</td><td>Broadcasting · PTV host &amp; analyst still</td><td>16:10</td><td>1600 × 1000</td><td>1</td><td><span class="pill rl">REAL</span> pref. / <span class="pill ai">AI</span></td><td class="mono">programme-ptv.jpg</td></tr>
+      <tr><td>12</td><td>Publications · book covers (wheel + list)</td><td>2:3</td><td>1000 × 1500</td><td>7–19</td><td><span class="pill rl">REAL</span></td><td class="mono">book-&lt;short-title&gt;.jpg</td></tr>
+      <tr><td>13</td><td>Medicine &amp; Academia · page header</td><td>4:5</td><td>1200 × 1500</td><td>1</td><td><span class="pill ai">AI</span></td><td class="mono">medicine-header.jpg</td></tr>
+      <tr><td>14</td><td>Insights · post image: Cricket</td><td>16:10</td><td>2400 × 1500</td><td>per post</td><td><span class="pill ai">AI</span></td><td class="mono">insight-&lt;post-slug&gt;.jpg</td></tr>
+      <tr><td>15</td><td>Insights · post image: History</td><td>16:10</td><td>2400 × 1500</td><td>per post</td><td><span class="pill ai">AI</span></td><td class="mono">insight-&lt;post-slug&gt;.jpg</td></tr>
+      <tr><td>16</td><td>Insights · post image: Medicine</td><td>16:10</td><td>2400 × 1500</td><td>per post</td><td><span class="pill ai">AI</span></td><td class="mono">insight-&lt;post-slug&gt;.jpg</td></tr>
+      <tr><td>17</td><td>Insights · post image: Guest</td><td>16:10</td><td>2400 × 1500</td><td>per post</td><td><span class="pill ai">AI</span></td><td class="mono">insight-&lt;post-slug&gt;.jpg</td></tr>
+      <tr><td>18</td><td>Insights · in-article figure</td><td>16:10</td><td>1600 × 1000</td><td>optional</td><td><span class="pill ai">AI</span> / <span class="pill rl">REAL</span></td><td class="mono">fig-&lt;post-slug&gt;-01.jpg</td></tr>
+      <tr><td>19</td><td>Insights · guest author photo</td><td>1:1</td><td>800 × 800</td><td>per guest</td><td><span class="pill rl">REAL</span></td><td class="mono">author-&lt;name&gt;.jpg</td></tr>
+      <tr><td>20</td><td>Conversations · episode thumbnail background</td><td>16:9</td><td>1280 × 720</td><td>1 template</td><td><span class="pill ai">AI</span></td><td class="mono">episode-bg.jpg</td></tr>
+      <tr><td>21</td><td>Conversations · episode thumbnails (final)</td><td>16:9</td><td>1280 × 720</td><td>per episode</td><td><span class="pill rl">REAL</span> guest photo on #20</td><td class="mono">ep-&lt;number&gt;.jpg</td></tr>
+      <tr><td>22</td><td>Conversations · guest photo</td><td>1:1</td><td>800 × 800</td><td>per guest</td><td><span class="pill rl">REAL</span></td><td class="mono">guest-&lt;name&gt;.jpg</td></tr>
+      <tr><td>23</td><td>Conversations · podcast cover art (Spotify / Apple)</td><td>1:1</td><td>3000 × 3000</td><td>1</td><td><span class="pill ai">AI</span> background</td><td class="mono">podcast-cover.jpg</td></tr>
+      <tr><td>24</td><td>Memorabilia · highlights grid, tall</td><td>3:4</td><td>1200 × 1600</td><td>3–4</td><td><span class="pill rl">REAL</span></td><td class="mono">collection-01.jpg …</td></tr>
+      <tr><td>25</td><td>Memorabilia · highlights grid, wide</td><td>4:3</td><td>1600 × 1200</td><td>5–8</td><td><span class="pill rl">REAL</span></td><td class="mono">collection-05.jpg …</td></tr>
+      <tr><td>26</td><td>Memorabilia · “Visit the museum” band background</td><td>21:9</td><td>2520 × 1080</td><td>1</td><td><span class="pill ai">AI</span></td><td class="mono">museum-band.jpg</td></tr>
+      <tr><td>27</td><td>All pages · social share image background</td><td>1.91:1</td><td>1200 × 630</td><td>1–9</td><td><span class="pill ai">AI</span></td><td class="mono">og-bg.jpg</td></tr>
+      <tr><td>28</td><td>Contact · section background (optional)</td><td>16:9</td><td>2400 × 1350</td><td>1</td><td><span class="pill ai">AI</span></td><td class="mono">contact-bg.jpg</td></tr>
+      <tr><td>29</td><td>About · press headshots (download pack)</td><td>4:5</td><td>2400 × 3000</td><td>3–4</td><td><span class="pill rl">REAL</span></td><td class="mono">headshot-01.jpg …</td></tr>
+      <tr><td>30</td><td>Broadcasting · showreel poster frame (optional)</td><td>16:9</td><td>1920 × 1080</td><td>1</td><td><span class="pill rl">REAL</span></td><td class="mono">showreel-poster.jpg</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ───────────── 4. AI PROMPTS ───────────── -->
+<section class="page">
+  <div class="sec-h"><span class="n">04</span><h2>AI prompts, slot by slot</h2></div>
+  <p style="font-size:8.8pt;color:var(--muted)">Paste the subject prompt, then the house style from page 2. The shape on the left shows the frame.</p>
+
+  <div class="card">
+    <div class="shape"><div class="r" style="width:24mm;height:30mm"></div>4:5 · 1200 × 1500</div>
+    <div>
+      <span class="id">#3 · pillar-broadcasting.jpg</span>
+      <h3>Home pillar: Broadcasting</h3>
+      <div class="prompt"><span class="lbl">Subject prompt</span>an empty television cricket studio at night, a curved analysis desk with two microphones, a large monitor glowing with a soft-focus green cricket field, a professional broadcast camera in the foreground slightly out of focus, studio lights hanging above, vertical portrait framing</div>
+      <p class="note">Midjourney: <code>--ar 4:5</code>. Keep monitors blank or blurred, with no channel logos.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="shape"><div class="r" style="width:24mm;height:30mm"></div>4:5 · 1200 × 1500</div>
+    <div>
+      <span class="id">#4 · pillar-publications.jpg</span>
+      <h3>Home pillar: Publications</h3>
+      <div class="prompt"><span class="lbl">Subject prompt</span>a tall stack of old cloth-bound cricket history books with worn, blank spines on a dark walnut desk, one book open showing faded tables of figures too small to read, a fountain pen and round reading glasses beside it, dust in a beam of warm light, vertical portrait framing</div>
+      <p class="note">Keep spines blank so the AI does not invent false book titles.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="shape"><div class="r" style="width:24mm;height:30mm"></div>4:5 · 1200 × 1500</div>
+    <div>
+      <span class="id">#5 · pillar-medicine.jpg</span>
+      <h3>Home pillar: Medicine &amp; Academia</h3>
+      <div class="prompt"><span class="lbl">Subject prompt</span>still life on a dark desk: a stethoscope loosely coiled beside an open leather notebook with hand-drawn biomechanics sketches of a bowler's shoulder and spine, a vintage red cricket ball, a glass of water catching the light, a few medical journals stacked in soft focus behind, vertical portrait framing</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="shape"><div class="r" style="width:24mm;height:30mm"></div>4:5 · 1200 × 1500</div>
+    <div>
+      <span class="id">#6 · pillar-memorabilia.jpg · use only if no real collection photo is ready</span>
+      <h3>Home pillar: Memorabilia (illustrative)</h3>
+      <div class="prompt"><span class="lbl">Subject prompt</span>macro close-up of a vintage dark-red leather cricket ball with a worn raised seam, resting on a yellowed Edwardian-era postcard with an indistinct faded ink scrawl, an antique brass magnifying glass at the edge of frame, velvet-lined display tray, vertical portrait framing</div>
+      <p class="note">Replace with a real photo from his collection as soon as one exists; the card links to the real collection.</p>
+    </div>
+  </div>
+</section>
+
+<section class="flow">
+  <div class="card">
+    <div class="shape"><div class="r" style="width:24mm;height:30mm"></div>4:5 · 1200 × 1500</div>
+    <div>
+      <span class="id">#9 · broadcasting-header.jpg · if no on-set photo of Dr. Niaz</span>
+      <h3>Broadcasting page header</h3>
+      <div class="prompt"><span class="lbl">Subject prompt</span>close detail of a professional broadcast camera lens in a dark television studio, the glass reflecting small amber studio lights, a softly blurred presenters' desk and monitors in the background, red tally light glowing on the camera, vertical portrait framing</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="shape"><div class="r" style="width:32mm;height:20mm"></div>16:10 · 1600 × 1000</div>
+    <div>
+      <span class="id">#10 · programme-game-on-hai.jpg · placeholder until a real still</span>
+      <h3>Broadcasting: Game On Hai set</h3>
+      <div class="prompt"><span class="lbl">Subject prompt</span>a modern cricket analysis talk-show set before the show begins: three empty presenter chairs behind a glossy dark desk, a wide video wall showing an out-of-focus floodlit cricket stadium, warm amber accent lights along the desk edge, wide landscape framing</div>
+      <p class="note">No people and no channel graphics. A real screenshot or set photo of the show is much better here.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="shape"><div class="r" style="width:32mm;height:20mm"></div>16:10 · 1600 × 1000</div>
+    <div>
+      <span class="id">#11 · programme-ptv.jpg · placeholder until a real still</span>
+      <h3>Broadcasting: PTV host &amp; analyst</h3>
+      <div class="prompt"><span class="lbl">Subject prompt</span>a commentary box overlooking a floodlit cricket ground at dusk, two headsets and a microphone resting on the desk, scoresheets and a notebook, the pitch and stands softly blurred through the glass, wide landscape framing</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="shape"><div class="r" style="width:24mm;height:30mm"></div>4:5 · 1200 × 1500</div>
+    <div>
+      <span class="id">#13 · medicine-header.jpg</span>
+      <h3>Medicine &amp; Academia page header</h3>
+      <div class="prompt"><span class="lbl">Subject prompt</span>a quiet physician's consulting room in the evening: a wooden desk with a stethoscope, a blood glucose meter and an open endocrinology textbook with diagrams, framed diplomas on the wall rendered too blurred to read, a warm desk lamp, vertical portrait framing</div>
+      <p class="note">Diplomas must stay unreadable: never generate fake certificates or names.</p>
+    </div>
+  </div>
+</section>
+
+<section class="flow">
+  <div class="sec-h"><span class="n">04b</span><h2>Insights post images (by category)</h2></div>
+  <p style="font-size:8.8pt;color:var(--muted)">One image per article, 16:10 at 2400 × 1500. The article page shows it wider (21:9), so keep the subject in the <b>middle horizontal band</b>. Swap the bracketed part to fit each article's topic.</p>
+
+  <div class="card">
+    <div class="shape"><div class="r" style="width:32mm;height:20mm"></div>16:10 · 2400 × 1500</div>
+    <div>
+      <span class="id">#14 · Cricket</span>
+      <h3>Cricket opinion pieces</h3>
+      <div class="prompt"><span class="lbl">Subject prompt</span>[a fast bowler's worn run-up marks and footholes on a dusty cricket pitch at golden hour], three stumps and bails in soft focus at the far end, long shadows across the turf, low camera angle, wide landscape framing</div>
+      <p class="note">Other ideas: a new ball on fresh grass at dawn; a lone bat leaning on an empty pavilion bench; floodlights coming on over an empty ground.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="shape"><div class="r" style="width:32mm;height:20mm"></div>16:10 · 2400 × 1500</div>
+    <div>
+      <span class="id">#15 · History</span>
+      <h3>History and archive pieces</h3>
+      <div class="prompt"><span class="lbl">Subject prompt</span>[an open antique cricket scorebook with faded handwritten columns], loose sepia photographs with curled edges scattered beside it, a brass magnifying glass, archive boxes on shelves blurred behind, overhead three-quarter angle, wide landscape framing</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="shape"><div class="r" style="width:32mm;height:20mm"></div>16:10 · 2400 × 1500</div>
+    <div>
+      <span class="id">#16 · Medicine</span>
+      <h3>Medicine and sports-science pieces</h3>
+      <div class="prompt"><span class="lbl">Subject prompt</span>[a dressing-room physio table with rolls of athletic tape, an ice pack and a stethoscope], cricket pads and a helmet resting on a bench in soft focus behind, clean clinical side light, wide landscape framing</div>
+      <p class="note">For diabetes or endocrinology articles: a glucose meter, a plate of balanced food and a notebook of readings on a dark table.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="shape"><div class="r" style="width:32mm;height:20mm"></div>16:10 · 2400 × 1500</div>
+    <div>
+      <span class="id">#17 · Guest</span>
+      <h3>Guest columns</h3>
+      <div class="prompt"><span class="lbl">Subject prompt</span>an empty wooden dressing-room bench with a folded cricket cap, a pair of batting gloves and a bat leaning against the wall, sunlight falling through a high window, nostalgic and quiet, wide landscape framing</div>
+      <p class="note">Optionally use the guest author's real photo instead.</p>
+    </div>
+  </div>
+</section>
+
+<section class="flow">
+  <div class="sec-h"><span class="n">04c</span><h2>Conversations, museum &amp; sharing</h2></div>
+
+  <div class="card">
+    <div class="shape"><div class="r" style="width:32mm;height:18mm"></div>16:9 · 1280 × 720</div>
+    <div>
+      <span class="id">#20 · episode-bg.jpg (thumbnail template)</span>
+      <h3>Episode thumbnail background</h3>
+      <div class="prompt"><span class="lbl">Subject prompt</span>a dark intimate podcast studio, two leather armchairs angled towards each other, two broadcast microphones on boom arms, a low table with a cricket ball and two glasses, warm amber lamp light, the left 45 percent of the frame kept dark and empty for text, wide landscape framing</div>
+      <p class="note">Final thumbnails (#21): place the guest's <b>real</b> cut-out photo on the right, and add the episode title on the empty left in Canva or Photoshop.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="shape"><div class="r" style="width:26mm;height:26mm"></div>1:1 · 3000 × 3000</div>
+    <div>
+      <span class="id">#23 · podcast-cover.jpg</span>
+      <h3>Podcast cover art background</h3>
+      <div class="prompt"><span class="lbl">Subject prompt</span>a single vintage studio microphone in the centre, a red cricket ball resting at its base, dramatic overhead spotlight, deep brown-black background with an amber glow behind the microphone, the top third of the frame empty for the series title, square framing</div>
+      <p class="note">Add the series name and “with Dr. Nauman Niaz” as text afterwards. Spotify and Apple need 3000 × 3000 JPG.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="shape"><div class="r" style="width:32mm;height:14mm"></div>21:9 · 2520 × 1080</div>
+    <div>
+      <span class="id">#26 · museum-band.jpg</span>
+      <h3>“Visit the museum” band</h3>
+      <div class="prompt"><span class="lbl">Subject prompt</span>a dim, elegant museum gallery of glass display cases holding indistinct antique sporting objects, warm spotlights pooling on dark wooden floors, long perspective down the hall, very wide panoramic framing, the left half darker for overlaid text</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="shape"><div class="r" style="width:32mm;height:17mm"></div>1.91:1 · 1200 × 630</div>
+    <div>
+      <span class="id">#27 · og-bg.jpg</span>
+      <h3>Social share image background</h3>
+      <div class="prompt"><span class="lbl">Subject prompt</span>extreme macro of the raised stitched seam of a dark-red leather cricket ball, placed on the right third of the frame, sharp highlight on the stitches falling off into deep shadow, the left two thirds smooth dark gradient for text, wide landscape framing</div>
+      <p class="note">The page title is added on top by the developer. One background can serve every page.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="shape"><div class="r" style="width:32mm;height:18mm"></div>16:9 · 2400 × 1350</div>
+    <div>
+      <span class="id">#28 · contact-bg.jpg (optional)</span>
+      <h3>Contact page background</h3>
+      <div class="prompt"><span class="lbl">Subject prompt</span>a writing desk by a window at dusk, a fountain pen resting on cream letter paper beside a sealed envelope, a cricket ball used as a paperweight, soft warm lamp light, wide landscape framing</div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── 5. REAL PHOTO CHECKLIST ───────────── -->
+<section class="page">
+  <div class="sec-h"><span class="n">05</span><h2>Real photo checklist</h2></div>
+  <p class="lead">These cannot be generated. Shoot or collect them, export at the listed size, and upload with the file name shown.</p>
+
+  <table>
+    <thead><tr><th>Slot</th><th>What to supply</th><th>Size</th><th>Shooting / editing notes</th></tr></thead>
+    <tbody>
+      <tr><td>#8 About portrait</td><td>A second portrait in a real setting: studio, clinic or library</td><td>1600 × 2000 (4:5)</td><td>Different from the home banner. Apply the same warm sepia grade so the pages match.</td></tr>
+      <tr><td>#29 Press headshots</td><td>3–4 approved headshots for journalists</td><td>2400 × 3000 (4:5)</td><td>Plain background; one colour, one sepia, one landscape crop.</td></tr>
+      <tr><td>#9–11 Broadcasting stills</td><td>Photos or screen-grabs of him on set: PTV studio, Game On Hai, commentary box</td><td>1600 × 1000 (16:10)</td><td>Make sure PTV allows reuse. Avoid channel logos unless permission is given.</td></tr>
+      <tr><td>#12 Book covers</td><td>Front cover of each book (19 in total)</td><td>1000 × 1500 (2:3)</td><td>Flat, straight-on scans or the publisher's cover files, with no shadows. These feed the book wheel.</td></tr>
+      <tr><td>#7, #24–25 Memorabilia</td><td>8–12 standout items with a one-line caption each (what, whose, year)</td><td>1200 × 1600 tall, 1600 × 1200 wide</td><td>Dark cloth or velvet background, one soft side light, shot square-on. Mix tall and wide frames. Captions approved by Dr. Niaz.</td></tr>
+      <tr><td>#19, #22 People</td><td>Guest and guest-author photos</td><td>800 × 800 (1:1)</td><td>Ask each guest for a photo they own the rights to.</td></tr>
+      <tr><td>#21 Episode thumbnails</td><td>Final thumbnail per episode</td><td>1280 × 720 (16:9)</td><td>Background #20 + real guest cut-out + title text. Same file as the YouTube thumbnail.</td></tr>
+      <tr><td>#30 Showreel poster</td><td>A frame from his best broadcast clip</td><td>1920 × 1080 (16:9)</td><td>Only if broadcast footage can be republished.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="grid2" style="margin-top:8mm">
+    <div class="box">
+      <h3>Uploading</h3>
+      <ul>
+        <li>Upload page: <span class="mono">github.com/Rajwara/Dr-Numan-/upload/claude/determined-hypatia-1fja1q/public/images</span></li>
+        <li>Use the file names in this guide, all lower-case, with hyphens and no spaces.</li>
+        <li>Send the developer a short note listing what was uploaded.</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>Matching the look</h3>
+      <ul>
+        <li>For real photos, apply a warm sepia grade (Lightroom: saturation −70, warm white balance, slight fade in the blacks) so they sit with the AI images.</li>
+        <li>Keep backgrounds dark and uncluttered.</li>
+        <li>Keep the subject centred: every slot is cropped slightly differently on phones.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
