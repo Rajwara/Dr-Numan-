@@ -1,0 +1,11 @@
+---
+import Arrow from './Arrow.astro';
+interface Props { href: string; variant?: 'dark' | 'ghost' | 'light'; size?: 'sm' | 'md'; external?: boolean; class?: string }
+const { href, variant = 'dark', size = 'md', external = false, class: cls = '' } = Astro.props;
+const ext = external ? { target: '_blank', rel: 'noopener noreferrer' } : {};
+---
+<a href={href} class:list={['btn', `btn--${variant}`, size === 'sm' && 'btn--sm', cls]} {...ext}>
+  <slot />
+  {variant !== 'ghost' && <span class="btn__icon"><Arrow dir="right" /></span>}
+  {external && <span class="sr-only">(opens in a new tab)</span>}
+</a>

@@ -1,0 +1,21 @@
+---
+/**
+ * Renders an image if `src` is set; otherwise a styled monochrome placeholder
+ * labelled with what photo belongs there, so the layout is review-ready
+ * before photography arrives.
+ */
+interface Props { src?: string; alt?: string; label?: string; ratio?: string; dark?: boolean; class?: string; eager?: boolean }
+const { src, alt = '', label = 'Image', ratio = '4 / 3', dark = false, class: cls = '', eager = false } = Astro.props;
+---
+<div class:list={['media', cls]} style={`aspect-ratio:${ratio}`}>
+  {src ? (
+    <img src={src} alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" />
+  ) : (
+    <div class:list={['ph', dark && 'ph--dark']} role="img" aria-label={alt || label}>
+      <span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 8"/></svg>
+        {label}
+      </span>
+    </div>
+  )}
+</div>

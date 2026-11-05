@@ -1,0 +1,178 @@
+---
+import { nav, site, socials } from '../data/site';
+const path = Astro.url.pathname;
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+const primary = nav.filter((n) => !n.more);
+const more = nav.filter((n) => n.more);
+const moreActive = more.some((n) => isActive(n.href));
+---
+<header class="hdr" data-hdr>
+  <div class="hdr__inner">
+    <a href="/" class="hdr__mark" aria-label={`${site.name}, home`}>
+      <span class="hdr__glyph" aria-hidden="true">N</span>
+      <span>{site.name}</span>
+    </a>
+
+    <nav class="hdr__nav" aria-label="Primary">
+      <ul>
+        {primary.map((item) => (
+          <li>
+            <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
+          </li>
+        ))}
+        <li class="hdr__more">
+          <button type="button" aria-expanded="false" aria-haspopup="true" class:list={[moreActive && 'is-active']} data-more>
+            More
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <ul class="hdr__drop glass" data-drop>
+            {more.map((item) => (
+              <li><a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a></li>
+            ))}
+          </ul>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="hdr__right">
+      <div class="hdr__time" aria-hidden="true">
+        <span class="muted">Local time</span>
+        <span><span data-clock>--:--</span> · <span data-date></span></span>
+      </div>
+      <a href="/conversations/" class="btn btn--dark btn--sm hdr__watch">Watch latest<span class="btn__icon"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg></span></a>
+      <button class="hdr__menu" type="button" aria-expanded="false" aria-controls="mobile-menu" data-menu-open>
+        <span class="hdr__burger" aria-hidden="true"><i></i><i></i></span>
+        Menu
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Full-screen mobile menu -->
+<div class="mnav" id="mobile-menu" hidden data-mnav>
+  <div class="mnav__top">
+    <a href="/" class="hdr__mark"><span class="hdr__glyph" aria-hidden="true">N</span><span>{site.name}</span></a>
+    <button class="hdr__menu hdr__menu--light" type="button" data-menu-close>Close</button>
+  </div>
+  <nav aria-label="Mobile">
+    <ol>
+      {nav.map((item, i) => (
+        <li><a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}><span>{String(i + 1).padStart(2, '0')}</span>{item.label}</a></li>
+      ))}
+    </ol>
+  </nav>
+  <div class="mnav__foot">
+    <a href="/conversations/" class="btn btn--light">Watch latest<span class="btn__icon"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg></span></a>
+    <div class="mnav__social">{socials.map((s) => <a href={s.url} target="_blank" rel="noopener noreferrer">{s.label}</a>)}</div>
+  </div>
+</div>
+
+<style>
+  .hdr { position: fixed; inset: 0 0 auto; z-index: 50; padding: 14px var(--gutter); transition: transform .6s var(--ease); }
+  .hdr.is-hidden { transform: translateY(-120%); }
+  .hdr__nav a:not(.hdr__drop a)::before { content: ''; position: absolute; left: 12px; right: 12px; bottom: 4px; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: right; transition: transform .5s var(--ease); }
+  .hdr__nav a:not(.hdr__drop a):hover::before { transform: scaleX(1); transform-origin: left; }
+  .hdr__inner {
+    max-width: var(--max); margin-inline: auto; height: 64px; padding: 0 10px 0 18px;
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    border-radius: 999px; border: 1px solid transparent;
+    transition: background .4s, border-color .4s, backdrop-filter .4s;
+  }
+  .hdr.is-scrolled .hdr__inner { background: rgba(236,236,238,.72); border-color: rgba(255,255,255,.7); backdrop-filter: blur(18px) saturate(1.3); -webkit-backdrop-filter: blur(18px) saturate(1.3); box-shadow: 0 10px 30px -20px rgba(0,0,0,.35); }
+  .hdr__mark { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; font-size: 1.12rem; letter-spacing: -0.035em; white-space: nowrap; }
+  .hdr__glyph { width: 32px; height: 32px; border-radius: 50%; background: var(--ink); color: #fff; display: grid; place-items: center; font-size: .95rem; font-weight: 600; position: relative; }
+  .hdr__glyph::after { content: ''; position: absolute; top: 3px; right: 2px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+  .hdr__nav > ul { display: flex; gap: 2px; list-style: none; margin: 0; padding: 0; }
+  .hdr__nav a, .hdr__more > button {
+    position: relative; display: inline-flex; align-items: center; gap: 5px; padding: 8px 12px; font-size: .9rem; font-weight: 500; color: var(--ink-2);
+    background: none; border: 0; cursor: pointer; border-radius: 999px; transition: color .2s;
+  }
+  .hdr__nav a:hover, .hdr__more > button:hover { color: var(--ink); }
+  .hdr__nav a[aria-current='page'], .hdr__more > button.is-active { color: var(--ink); }
+  .hdr__nav > ul > li > a[aria-current='page']::after, .hdr__more > button.is-active::after {
+    content: ''; position: absolute; left: 50%; bottom: -2px; width: 5px; height: 5px; margin-left: -2.5px; border-radius: 50%; background: var(--accent);
+  }
+  .hdr__more { position: relative; }
+  .hdr__drop { position: absolute; top: calc(100% + 10px); left: 50%; translate: -50% 0; list-style: none; margin: 0; padding: 8px; min-width: 220px; border-radius: 20px; opacity: 0; visibility: hidden; transform: translateY(-6px); transition: .3s var(--ease); background: rgba(240,240,242,.85); }
+  .hdr__more.is-open .hdr__drop, .hdr__more:hover .hdr__drop, .hdr__more:focus-within .hdr__drop { opacity: 1; visibility: visible; transform: none; }
+  .hdr__drop a { display: flex; padding: 10px 14px; border-radius: 12px; }
+  .hdr__drop a:hover { background: rgba(17,17,19,.06); }
+
+  .hdr__right { display: flex; align-items: center; gap: 14px; }
+  .hdr__time { display: grid; font-size: .7rem; line-height: 1.3; padding-left: 14px; border-left: 1.5px solid var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .hdr__menu { display: none; align-items: center; gap: 10px; height: 40px; padding: 0 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,.8); background: rgba(255,255,255,.55); font-size: .78rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; cursor: pointer; backdrop-filter: blur(10px); }
+  .hdr__burger { display: grid; gap: 4px; }
+  .hdr__burger i { display: block; width: 14px; height: 1.6px; background: currentColor; }
+
+  @media (max-width: 1240px) { .hdr__time { display: none; } }
+  @media (max-width: 1060px) {
+    .hdr__nav { display: none; }
+    .hdr__menu { display: inline-flex; }
+  }
+  @media (max-width: 560px) {
+    .hdr__watch { display: none; }
+    .hdr__inner { height: 56px; padding-left: 12px; }
+    .hdr { padding-top: 10px; }
+  }
+
+  .mnav { position: fixed; inset: 0; z-index: 60; background: var(--dark); color: #fff; padding: 18px var(--gutter) 32px; display: flex; flex-direction: column; overflow-y: auto; }
+  .mnav:not([hidden]) { animation: mnav-in .45s var(--ease); }
+  @keyframes mnav-in { from { opacity: 0; transform: translateY(-12px); } }
+  .mnav__top { display: flex; justify-content: space-between; align-items: center; height: 56px; }
+  .mnav .hdr__glyph { background: #fff; color: var(--ink); }
+  .hdr__menu--light { display: inline-flex; background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.2); color: #fff; }
+  .mnav ol { list-style: none; margin: 36px 0; padding: 0; display: grid; gap: 4px; }
+  .mnav ol a { display: flex; align-items: baseline; gap: 16px; font-size: clamp(1.9rem, 8vw, 3rem); font-weight: 500; letter-spacing: -0.045em; line-height: 1.15; color: #d9d9dd; }
+  .mnav ol a span { font-size: .8rem; letter-spacing: 0; color: #77777e; font-variant-numeric: tabular-nums; }
+  .mnav ol a[aria-current='page'], .mnav ol a:hover { color: var(--accent); }
+  .mnav__foot { margin-top: auto; display: grid; gap: 22px; }
+  .mnav__social { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: .9rem; color: #a9a9af; }
+</style>
+
+<script>
+  const hdr = document.querySelector<HTMLElement>('[data-hdr]')!;
+  const onScroll = () => hdr.classList.toggle('is-scrolled', window.scrollY > 24);
+  onScroll();
+  addEventListener('scroll', onScroll, { passive: true });
+
+  // live clock in the site's timezone (mirrors the "Timezone" block in the reference design)
+  const clock = document.querySelector('[data-clock]');
+  const date = document.querySelector('[data-date]');
+  const tz = 'Asia/Karachi';
+  const tick = () => {
+    const now = new Date();
+    if (clock) clock.textContent = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: tz });
+    if (date) date.textContent = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: tz });
+  };
+  tick();
+  setInterval(tick, 30000);
+
+  // "More" dropdown (click for touch/keyboard; hover handled in CSS)
+  const moreBtn = document.querySelector<HTMLButtonElement>('[data-more]');
+  moreBtn?.addEventListener('click', () => {
+    const li = moreBtn.parentElement!;
+    const open = li.classList.toggle('is-open');
+    moreBtn.setAttribute('aria-expanded', String(open));
+  });
+  document.addEventListener('click', (e) => {
+    if (moreBtn && !moreBtn.parentElement!.contains(e.target as Node)) {
+      moreBtn.parentElement!.classList.remove('is-open');
+      moreBtn.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  // full-screen mobile menu
+  const mnav = document.querySelector<HTMLElement>('[data-mnav]')!;
+  const openBtn = document.querySelector<HTMLButtonElement>('[data-menu-open]')!;
+  const closeBtn = document.querySelector<HTMLButtonElement>('[data-menu-close]')!;
+  const setMenu = (open: boolean) => {
+    mnav.hidden = !open;
+    openBtn.setAttribute('aria-expanded', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
+    (open ? closeBtn : openBtn).focus();
+  };
+  openBtn.addEventListener('click', () => setMenu(true));
+  closeBtn.addEventListener('click', () => setMenu(false));
+  addEventListener('keydown', (e) => { if (e.key === 'Escape' && !mnav.hidden) setMenu(false); });
+</script>

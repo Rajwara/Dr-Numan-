@@ -1,0 +1,115 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import EpisodeCard from '../../components/EpisodeCard.astro';
+import YouTube from '../../components/YouTube.astro';
+import Button from '../../components/Button.astro';
+import { subscribeLinks } from '../../data/site';
+import { byDate, fmtDate } from '../../scripts/util';
+
+const eps = (await getCollection('conversations')).sort(byDate);
+const [latest, ...rest] = eps;
+const guests = [...new Set(eps.map((e) => e.data.guest))].sort((a, b) => a.localeCompare(b));
+const series = [...new Set(eps.map((e) => e.data.series))];
+// TODO: series title to be decided with Dr. Niaz (Conversations sheet, 1.0)
+const SERIES_TITLE = 'Conversations';
+---
+<Base title={SERIES_TITLE} description="Conversations with cricketers and friends of the game, hosted by Dr. Nauman Niaz. Watch on YouTube or listen as a podcast.">
+  <PageHeader eyebrow="Podcast & vlog" title={SERIES_TITLE} summary="Long-form conversations with cricketers and friends of the game." showImage={false}>
+    <div class="btn-row">
+      {subscribeLinks.map((s, i) => (
+        <Button href={s.url} variant={i === 0 ? 'dark' : 'ghost'} size="sm" external>{s.label}</Button>
+      ))}
+    </div>
+  </PageHeader>
+
+  {latest && (
+    <section class="section--dark feat-ep">
+      <div class="container feat-ep__grid">
+        <div class="feat-ep__player" data-clip>
+          {latest.data.format === 'Video'
+            ? <YouTube id={latest.data.youtubeId} title={latest.data.title} thumbnail={latest.data.thumbnail} />
+            : latest.data.audioUrl
+              ? <audio controls preload="none" src={latest.data.audioUrl}></audio>
+              : <YouTube title={latest.data.title} />}
+        </div>
+        <div class="feat-ep__body reveal">
+          <span class="tag tag--accent">Latest episode · {latest.data.format}</span>
+          <h2 class="h2">{latest.data.title}</h2>
+          <p class="muted"><strong style="color:#fff">{latest.data.guest}</strong> · {latest.data.guestRole}</p>
+          <div class="card__meta"><span>{fmtDate(latest.data.date)}</span><span>{latest.data.duration}</span></div>
+          <Button href={`/conversations/${latest.id}/`} variant="light">Episode page &amp; show notes</Button>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div><span class="eyebrow">Archive</span><h2 class="h2" data-split>All <em>episodes</em></h2></div>
+        <div class="ep-filters">
+          <label class="sel"><span class="sr-only">Filter by guest</span>
+            <select data-f="guest"><option value="">All guests</option>{guests.map((g) => <option>{g}</option>)}</select>
+          </label>
+          {series.length > 1 && (
+            <label class="sel"><span class="sr-only">Filter by series</span>
+              <select data-f="series"><option value="">All series</option>{series.map((s) => <option>{s}</option>)}</select>
+            </label>
+          )}
+        </div>
+      </div>
+      <div class="grid grid-3" data-stagger>
+        {rest.map((ep) => <div data-ep data-guest={ep.data.guest} data-series={ep.data.series}><EpisodeCard ep={ep} /></div>)}
+      </div>
+      <p class="muted" data-none hidden>No episodes match.</p>
+    </div>
+  </section>
+
+  {guests.length > 0 && (
+    <section class="section--tight">
+      <div class="container">
+        <div class="section-head"><div><span class="eyebrow">Guest index</span><h2 class="h3">Everyone who has joined the conversation</h2></div></div>
+        <ul class="gidx">
+          {guests.map((g) => {
+            const ge = eps.filter((e) => e.data.guest === g);
+            return <li><a class="u-sweep" href={`/conversations/${ge[0].id}/`}>{g}</a> <span class="muted">({ge.length})</span></li>;
+          })}
+        </ul>
+      </div>
+    </section>
+  )}
+</Base>
+
+<style>
+  .feat-ep { border-radius: var(--radius-lg); margin-inline: clamp(8px, 1.4vw, 20px); padding-block: clamp(40px, 6vw, 80px); }
+  .feat-ep__grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: clamp(24px, 4vw, 56px); align-items: center; }
+  .feat-ep__player { border-radius: var(--radius); overflow: hidden; }
+  .feat-ep__player audio { width: 100%; }
+  .feat-ep__body { display: grid; gap: 16px; }
+  .feat-ep__body p { margin: 0; }
+  .feat-ep .card__meta { color: #9b9ba2; }
+  .ep-filters { display: flex; gap: 10px; flex-wrap: wrap; }
+  .sel select { height: 42px; padding: 0 40px 0 18px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23111' stroke-width='2.4'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 16px center; appearance: none; font: inherit; font-size: .88rem; }
+  [data-ep] :global(.card) { height: 100%; }
+  .gidx { list-style: none; margin: 0; padding: 0; columns: 4 200px; column-gap: 32px; }
+  .gidx li { padding: 8px 0; border-bottom: 1px solid var(--line); break-inside: avoid; }
+  @media (max-width: 860px) { .feat-ep__grid { grid-template-columns: 1fr; } }
+</style>
+<script>
+  const eps = Array.from(document.querySelectorAll<HTMLElement>('[data-ep]'));
+  const none = document.querySelector<HTMLElement>('[data-none]')!;
+  const sels = Array.from(document.querySelectorAll<HTMLSelectElement>('[data-f]'));
+  const apply = () => {
+    const f = Object.fromEntries(sels.map((s) => [s.dataset.f, s.value]));
+    let n = 0;
+    eps.forEach((el) => {
+      const ok = (!f.guest || el.dataset.guest === f.guest) && (!f.series || el.dataset.series === f.series);
+      el.hidden = !ok;
+      if (ok) { n++; el.style.opacity = '1'; el.style.transform = 'none'; }
+    });
+    none.hidden = n > 0;
+  };
+  sels.forEach((s) => s.addEventListener('change', apply));
+</script>

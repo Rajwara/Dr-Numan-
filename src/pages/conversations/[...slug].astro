@@ -1,0 +1,102 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import YouTube from '../../components/YouTube.astro';
+import Media from '../../components/Media.astro';
+import EpisodeCard from '../../components/EpisodeCard.astro';
+import Button from '../../components/Button.astro';
+import { byDate, fmtDate } from '../../scripts/util';
+
+export async function getStaticPaths() {
+  const eps = await getCollection('conversations');
+  return eps.map((ep) => ({ params: { slug: ep.id }, props: { ep } }));
+}
+const { ep } = Astro.props;
+const { Content } = await render(ep);
+const d = ep.data;
+const others = (await getCollection('conversations')).sort(byDate).filter((e) => e.id !== ep.id).slice(0, 3);
+---
+<Base title={`${d.title}, with ${d.guest}`} description={d.metaDescription ?? `${d.guest} (${d.guestRole}) in conversation with Dr. Nauman Niaz.`} ogImage={d.ogImage ?? d.thumbnail} type="article">
+  <header class="ep-h container">
+    <a href="/conversations/" class="back u-sweep">← All episodes</a>
+    <div class="filters"><span class="tag tag--dark">{d.format}</span><span class="tag">{d.series}</span></div>
+    <h1 class="h1" data-split>{d.title}</h1>
+    <div class="card__meta reveal"><span>with <strong>{d.guest}</strong>, {d.guestRole}</span><span>{fmtDate(d.date)}</span><span>{d.duration}</span></div>
+  </header>
+
+  <!-- One player, not both. Embed is lazy-loaded. -->
+  <section class="container ep-player" data-clip>
+    {d.format === 'Video' && <YouTube id={d.youtubeId} title={d.title} thumbnail={d.thumbnail} />}
+    {d.format === 'Audio' && (d.audioUrl
+      ? <div class="audio"><audio controls preload="none" src={d.audioUrl}></audio></div>
+      : <Media label="Audio player: add audioUrl" ratio="21 / 6" dark />)}
+  </section>
+
+  <section class="section ep-body container">
+    <div class="ep-main">
+      <div class="prose reveal"><Content /></div>
+
+      {d.showNotes.length > 0 && (
+        <div class="notes reveal">
+          <h2 class="h3">Show notes</h2>
+          <ol class="rows">
+            {d.showNotes.map((n) => <li class="row"><span class="row__title">{n.topic}</span><span class="row__meta notes__t">{n.time}</span></li>)}
+          </ol>
+          {d.links.length > 0 && (
+            <div class="notes__links"><h3 class="muted" style="font-size:.9rem;font-weight:500">Links mentioned</h3>
+              <ul>{d.links.map((l) => <li><a class="u-sweep" href={l.url} target="_blank" rel="noopener noreferrer">{l.label} ↗</a></li>)}</ul>
+            </div>
+          )}
+        </div>
+      )}
+
+      {d.transcript && (
+        <details class="transcript">
+          <summary>Read the full transcript <span>+</span></summary>
+          <div class="prose"><p>{d.transcript}</p></div>
+        </details>
+      )}
+    </div>
+
+    <aside class="guest card reveal">
+      <Media src={d.guestPhoto} alt={d.guest} label="Guest photo" ratio="1" dark />
+      <div class="card__body">
+        <span class="eyebrow">About the guest</span>
+        <h2 class="h3">{d.guest}</h2>
+        <span class="muted" style="font-size:.9rem">{d.guestRole}</span>
+        <p style="margin:0">{d.guestBio}</p>
+        {d.guestLinks.length > 0 && <div class="filters">{d.guestLinks.map((l) => <a class="chip" style="display:inline-flex;align-items:center" href={l.url} target="_blank" rel="noopener noreferrer">{l.label}</a>)}</div>}
+      </div>
+    </aside>
+  </section>
+
+  {others.length > 0 && (
+    <section class="section" style="padding-top:0">
+      <div class="container">
+        <div class="section-head"><div><span class="eyebrow">Keep watching</span><h2 class="h2" data-split>More <em>episodes</em></h2></div><Button href="/conversations/">All episodes</Button></div>
+        <div class="grid grid-3" data-stagger>{others.map((e) => <EpisodeCard ep={e} />)}</div>
+      </div>
+    </section>
+  )}
+</Base>
+<style>
+  .ep-h { padding-top: clamp(130px, 14vw, 190px); display: grid; gap: 20px; max-width: 1100px; }
+  .back { font-size: .9rem; color: var(--muted); width: fit-content; }
+  .ep-player { margin-top: 40px; }
+  .ep-player > :global(*) { border-radius: var(--radius-lg); overflow: hidden; }
+  .audio { background: var(--dark); padding: 32px; }
+  .audio audio { width: 100%; }
+  .ep-body { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 64px; align-items: start; }
+  .ep-main { display: grid; gap: 48px; }
+  .notes { display: grid; gap: 18px; }
+  .notes ol { list-style: none; margin: 0; padding: 0; }
+  .notes__t { font-variant-numeric: tabular-nums; color: var(--accent-deep); font-weight: 500; }
+  .notes__links ul { padding-left: 18px; }
+  .transcript { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .transcript summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; padding: 20px 0; font-weight: 500; font-size: 1.1rem; }
+  .transcript summary span { transition: transform .4s var(--ease); font-size: 1.4rem; line-height: 1; }
+  .transcript[open] summary span { transform: rotate(45deg); }
+  .transcript .prose { padding-bottom: 24px; }
+  .guest { position: sticky; top: 110px; }
+  @media (max-width: 960px) { .ep-body { grid-template-columns: 1fr; } .guest { position: static; } }
+</style>

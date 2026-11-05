@@ -1,0 +1,91 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Media from '../../components/Media.astro';
+import PostCard from '../../components/PostCard.astro';
+import Button from '../../components/Button.astro';
+import { byDate, fmtDate, readingTime } from '../../scripts/util';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('insights');
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+const { post } = Astro.props;
+const { Content } = await render(post);
+const d = post.data;
+const all = (await getCollection('insights')).sort(byDate).filter((p) => p.id !== post.id);
+const related = [...all.filter((p) => p.data.category === d.category), ...all.filter((p) => p.data.category !== d.category)].slice(0, 3);
+const url = new URL(`/insights/${post.id}/`, Astro.site).toString();
+const enc = encodeURIComponent;
+const share = [
+  { label: 'X', href: `https://x.com/intent/tweet?url=${enc(url)}&text=${enc(d.title)}` },
+  { label: 'WhatsApp', href: `https://wa.me/?text=${enc(`${d.title} ${url}`)}` },
+  { label: 'LinkedIn', href: `https://www.linkedin.com/sharing/share-offsite/?url=${enc(url)}` },
+];
+const isGuest = d.author !== 'Dr. Nauman Niaz';
+---
+<Base title={d.title} description={d.metaDescription ?? d.excerpt} ogImage={d.ogImage ?? d.image} type="article">
+  <article>
+    <header class="post-h container">
+      <a href="/insights/" class="back u-sweep">← All insights</a>
+      <span class:list={['tag', isGuest && 'tag--accent']}>{d.category}</span>
+      <h1 class="h1" data-split>{d.title}</h1>
+      <div class="post-h__meta reveal">
+        <div class="author">
+          {isGuest ? <Media src={d.authorPhoto} alt={d.author} label="" ratio="1" /> : <span class="author__mono">N</span>}
+          <div><strong>{d.author}</strong>{d.authorRole && <span class="muted">{d.authorRole}</span>}</div>
+        </div>
+        <div class="card__meta"><span>{fmtDate(d.date)}</span><span>{readingTime(post.body)}</span></div>
+      </div>
+    </header>
+    <div class="container post-hero" data-clip>
+      <Media src={d.image} alt={d.imageAlt} label="Post hero image" ratio="21 / 9" eager />
+    </div>
+
+    <div class="container post-body">
+      <div class="prose reveal"><Content /></div>
+      <aside class="post-side">
+        <div class="share">
+          <span class="muted">Share</span>
+          {share.map((s) => <a class="chip" href={s.href} target="_blank" rel="noopener noreferrer">{s.label}</a>)}
+          <button class="chip" type="button" data-copy={url}>Copy link</button>
+        </div>
+        {d.tags.length > 0 && <div class="filters">{d.tags.map((t) => <span class="tag">#{t}</span>)}</div>}
+      </aside>
+    </div>
+  </article>
+
+  {related.length > 0 && (
+    <section class="section">
+      <div class="container">
+        <div class="section-head"><div><span class="eyebrow">Keep reading</span><h2 class="h2" data-split>Related <em>insights</em></h2></div><Button href="/insights/">All insights</Button></div>
+        <div class="grid grid-3" data-stagger>{related.map((p) => <PostCard post={p} />)}</div>
+      </div>
+    </section>
+  )}
+</Base>
+
+<style>
+  .post-h { padding-top: clamp(130px, 14vw, 190px); display: grid; gap: 22px; max-width: 1100px; }
+  .back { font-size: .9rem; color: var(--muted); width: fit-content; }
+  .post-h__meta { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; padding-top: 22px; border-top: 1px solid var(--line); }
+  .author { display: flex; align-items: center; gap: 12px; }
+  .author > div { display: grid; line-height: 1.3; font-size: .92rem; }
+  .author :global(.media) { width: 44px; border-radius: 50%; }
+  .author__mono { width: 44px; height: 44px; border-radius: 50%; background: var(--ink); color: #fff; display: grid; place-items: center; font-weight: 600; }
+  .post-hero { margin-top: 40px; }
+  .post-hero :global(.media) { border-radius: var(--radius-lg); }
+  .post-body { display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 64px; padding-block: clamp(48px, 6vw, 88px); max-width: 1100px; }
+  .post-side { position: sticky; top: 110px; align-self: start; display: grid; gap: 24px; }
+  .share { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .share .muted { width: 100%; font-size: .85rem; }
+  @media (max-width: 900px) { .post-body { grid-template-columns: 1fr; } .post-side { position: static; } }
+</style>
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((b) =>
+    b.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(b.dataset.copy!); b.textContent = 'Copied ✓'; } catch { b.textContent = 'Copy failed'; }
+      setTimeout(() => (b.textContent = 'Copy link'), 2000);
+    }),
+  );
+</script>

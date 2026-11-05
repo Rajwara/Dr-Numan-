@@ -1,0 +1,13 @@
+---
+import Media from '../Media.astro';
+const { src, alt = '', caption } = Astro.props;
+---
+<figure class="fig">
+  <div data-clip><Media src={src} alt={alt} label="Figure image" ratio="16 / 10" /></div>
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+<style>
+  .fig { margin: 2em 0; }
+  .fig :global(.media) { border-radius: var(--radius); }
+  .fig figcaption { margin-top: 12px; font-size: .88rem; color: var(--muted); }
+</style>

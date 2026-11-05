@@ -1,0 +1,157 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Button from '../components/Button.astro';
+import { site, biography, qualifications, timeline, honours, quotes, downloads } from '../data/site';
+const fields = ['Medicine', 'Broadcasting', 'Writing', 'Academia'] as const;
+---
+<Base title="About" description={`Biography, qualifications, career timeline and honours of ${site.name}: ${site.descriptor}`}>
+  <PageHeader
+    eyebrow="About"
+    title="About"
+    summary="Placeholder summary (2–3 sentences): a physician by training, a broadcaster by calling and a historian by temperament. Replace with the approved 150-word bio, trimmed."
+    image={site.aboutPortrait}
+    imageLabel="Environmental portrait: studio, clinic or library"
+    imageAlt="Dr. Nauman Niaz"
+  />
+
+  <!-- 2.0 BIOGRAPHY -->
+  <section class="section">
+    <div class="container bio">
+      <nav class="bio__toc" aria-label="Biography sections">
+        <span class="eyebrow">Biography</span>
+        <ol>{biography.map((b, i) => <li><a href={`#bio-${i}`} class="u-sweep">{b.heading}</a></li>)}</ol>
+      </nav>
+      <div class="bio__body">
+        {biography.map((b, i) => (
+          <section id={`bio-${i}`} class="bio__sec">
+            <span class="bio__n">0{i + 1}</span>
+            <h2 class="h2" data-split>{b.heading}</h2>
+            <div class="prose reveal">{b.body.map((p) => <p>{p}</p>)}</div>
+          </section>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 3.0 QUALIFICATIONS -->
+  <section class="section section--dark">
+    <div class="container">
+      <div class="section-head"><div><span class="eyebrow">Qualifications</span><h2 class="h2" data-split>Degrees, fellowships <em>&amp; memberships</em></h2></div></div>
+      <ul class="rows" data-stagger style="list-style:none;margin:0;padding:0">
+        {qualifications.map((q) => (
+          <li class="row"><span><span class="row__title">{q.title}</span><br /><span class="row__meta">{q.institution}</span></span><span class="row__meta">{q.year}</span></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- 4.0 CAREER TIMELINE -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div><span class="eyebrow">Career timeline</span><h2 class="h2" data-split>Four careers, <em>one line.</em></h2></div>
+        <ul class="legend">{fields.map((f) => <li data-field={f}>{f}</li>)}</ul>
+      </div>
+      <ol class="tl">
+        <span class="tl__line" aria-hidden="true"><i data-progress></i></span>
+        {timeline.map((t, i) => (
+          <li class:list={['tl__item reveal', i % 2 ? 'tl__item--r' : 'tl__item--l']} data-field={t.field}>
+            <span class="tl__dot" aria-hidden="true"></span>
+            <div class="tl__card">
+              <span class="tl__year">{t.year}</span>
+              <h3 class="h3">{t.title}</h3>
+              <p class="muted">{t.text}</p>
+              <span class="tl__field">{t.field}</span>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- 5.0 HONOURS -->
+  {honours.length > 0 && (
+    <section class="section" style="padding-top:0">
+      <div class="container">
+        <div class="section-head"><div><span class="eyebrow">Honours &amp; recognition</span><h2 class="h2" data-split>Recognition</h2></div></div>
+        <div class="grid grid-3" data-stagger>
+          {honours.map((h) => (
+            <div class="card honour" data-tilt>
+              <span class="honour__year">{h.year}</span>
+              <h3 class="h3">{h.title}</h3>
+              <p class="muted" style="margin:0">{h.body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- 6.0 IN THEIR WORDS (optional) -->
+  {quotes.length > 0 && (
+    <section class="section" style="padding-top:0">
+      <div class="container grid grid-2" data-stagger>
+        {quotes.map((q) => <blockquote class="card" style="padding:32px;margin:0"><p class="h3">“{q.quote}”</p><footer><strong>{q.name}</strong> · <span class="muted">{q.role}</span></footer></blockquote>)}
+      </div>
+    </section>
+  )}
+
+  <!-- 7.0 DOWNLOADS (optional) -->
+  {downloads.length > 0 && (
+    <section class="section" style="padding-top:0">
+      <div class="container">
+        <div class="section-head"><div><span class="eyebrow">Press kit</span><h2 class="h2">Downloads</h2></div></div>
+        <div class="grid grid-3">{downloads.map((d) => <a class="card card__body" href={d.href} download><strong>{d.label}</strong><span class="muted">{d.meta}</span></a>)}</div>
+      </div>
+    </section>
+  )}
+
+  <!-- 8.0 CTA -->
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div class="cta-band reveal">
+        <span class="eyebrow">Continue</span>
+        <h2 class="h2">Read his writing, or <em>start a conversation.</em></h2>
+        <div class="btn-row"><Button href="/insights/" variant="light">Read his Insights</Button><a class="btn btn--ghost" style="color:#fff;background:rgba(255,255,255,.12)" href="/contact/">Get in touch</a></div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .bio { display: grid; grid-template-columns: 260px 1fr; gap: clamp(32px, 6vw, 96px); }
+  .bio__toc { position: sticky; top: 110px; align-self: start; display: grid; gap: 18px; }
+  .bio__toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; color: var(--muted); }
+  .bio__toc a:hover { color: var(--ink); }
+  .bio__body { display: grid; gap: clamp(48px, 6vw, 88px); }
+  .bio__sec { display: grid; gap: 18px; scroll-margin-top: 110px; }
+  .bio__n { font-size: .8rem; color: var(--accent-deep); }
+  @media (max-width: 860px) { .bio { grid-template-columns: 1fr; } .bio__toc { position: static; } }
+
+  [data-field='Medicine'] { --fc: var(--f-medicine); }
+  [data-field='Broadcasting'] { --fc: var(--f-broadcasting); }
+  [data-field='Writing'] { --fc: var(--f-writing); }
+  [data-field='Academia'] { --fc: var(--f-academia); }
+  .legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: .86rem; }
+  .legend li::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--fc); margin-right: 8px; }
+
+  .tl { list-style: none; margin: 0; padding: 0; position: relative; display: grid; gap: 24px; }
+  .tl__line { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--line); }
+  .tl__line i { display: block; height: 100%; background: linear-gradient(var(--accent), var(--ink)); transform-origin: top; }
+  .tl__item { position: relative; display: grid; grid-template-columns: 1fr 1fr; }
+  .tl__dot { position: absolute; left: 50%; top: 28px; width: 16px; height: 16px; margin-left: -8px; border-radius: 50%; background: var(--bg); border: 3px solid var(--fc); z-index: 1; }
+  .tl__card { background: var(--surface); border-radius: var(--radius); padding: 22px 24px; display: grid; gap: 6px; border-top: 3px solid var(--fc); }
+  .tl__card p { margin: 0; }
+  .tl__item--l .tl__card { grid-column: 1; margin-right: 48px; }
+  .tl__item--r .tl__card { grid-column: 2; margin-left: 48px; }
+  .tl__year { font-size: 2rem; font-weight: 500; letter-spacing: -0.05em; color: var(--fc); line-height: 1; }
+  .tl__field { font-size: .75rem; color: var(--muted); }
+  @media (max-width: 760px) {
+    .tl__line, .tl__dot { left: 8px; }
+    .tl__item { grid-template-columns: 1fr; }
+    .tl__item--l .tl__card, .tl__item--r .tl__card { grid-column: 1; margin: 0 0 0 36px; }
+  }
+  .honour { padding: 28px; gap: 12px; }
+  .honour__year { font-size: .8rem; color: var(--accent-deep); }
+</style>

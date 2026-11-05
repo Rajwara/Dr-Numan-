@@ -1,0 +1,46 @@
+---
+import { nav, site, socials } from '../data/site';
+const external = [{ label: 'Museum site', url: site.museum.url }, ...socials];
+const year = new Date().getFullYear();
+---
+<footer class="ftr">
+  <div class="container">
+    <div class="ftr__top">
+      <div class="ftr__bio">
+        <a href="/" class="ftr__mark">{site.name}</a>
+        <p>{site.shortBio}</p>
+        <a href="/contact/" class="btn btn--light btn--sm">Get in touch<span class="btn__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="transform:rotate(45deg)"><path d="M7 17 17 7M8 7h9v9"/></svg></span></a>
+      </div>
+      <nav aria-label="Footer">
+        <h2 class="ftr__h">Pages</h2>
+        <ul>{nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}</ul>
+      </nav>
+      <div>
+        <h2 class="ftr__h">Elsewhere</h2>
+        <ul>{external.map((s) => <li><a href={s.url} target="_blank" rel="noopener noreferrer">{s.label} ↗</a></li>)}</ul>
+      </div>
+    </div>
+    <div class="ftr__word" aria-hidden="true">Nauman Niaz</div>
+    <div class="ftr__bottom">
+      <span>© {year} {site.name}. All rights reserved.</span>
+      <span>Site by <a href="https://penaxis.com" target="_blank" rel="noopener noreferrer">Penaxis</a></span>
+    </div>
+  </div>
+</footer>
+<style>
+  .ftr { background: var(--dark); color: #d6d6da; padding-top: clamp(64px, 8vw, 110px); overflow: hidden; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+  .ftr__top { display: grid; grid-template-columns: 1.6fr 1fr 1fr; gap: 40px; }
+  .ftr__bio { display: grid; gap: 20px; align-content: start; justify-items: start; max-width: 440px; }
+  .ftr__bio p { margin: 0; color: #9d9da4; }
+  .ftr__mark { font-size: 1.6rem; font-weight: 600; letter-spacing: -0.04em; color: #fff; }
+  .ftr__h { font-size: .78rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: #77777e; margin-bottom: 18px; }
+  .ftr ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .ftr ul a:hover { color: var(--accent); }
+  .ftr__word {
+    margin-top: clamp(48px, 7vw, 96px); font-size: clamp(3.4rem, 14.5vw, 14rem); font-weight: 500; letter-spacing: -0.07em; line-height: .85; white-space: nowrap; text-align: center;
+    background: linear-gradient(180deg, #3a3a3f 0%, rgba(58,58,63,0) 95%); -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .ftr__bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; padding: 24px 0 32px; border-top: 1px solid rgba(255,255,255,.1); font-size: .84rem; color: #85858c; }
+  .ftr__bottom a { color: #d6d6da; }
+  @media (max-width: 820px) { .ftr__top { grid-template-columns: 1fr 1fr; } .ftr__bio { grid-column: 1 / -1; } }
+</style>

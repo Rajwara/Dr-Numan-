@@ -1,0 +1,82 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import PostCard from '../../components/PostCard.astro';
+import Media from '../../components/Media.astro';
+import Button from '../../components/Button.astro';
+import { byDate, fmtDate, readingTime } from '../../scripts/util';
+
+const posts = (await getCollection('insights')).sort(byDate);
+const featured = posts.find((p) => p.data.pinned) ?? posts[0];
+const rest = posts.filter((p) => p !== featured);
+const cats = ['All', 'Cricket', 'History', 'Medicine', 'Guest'];
+const PER_PAGE = 9;
+---
+<Base title="Insights" description="Essays and opinion from Dr. Nauman Niaz on cricket, its history and sports medicine, plus guest columns from the game's leading voices.">
+  <PageHeader eyebrow="Insights" title="Insights" summary="Opinion and essays on cricket, its history and the medicine of sport." showImage={false}>
+    <div class="filters" role="group" aria-label="Filter by category" data-filters>
+      {cats.map((c, i) => <button type="button" class="chip" aria-pressed={i === 0 ? 'true' : 'false'} data-filter={c}>{c}</button>)}
+    </div>
+  </PageHeader>
+
+  {featured && (
+    <section class="container">
+      <a class="feat zoom" href={`/insights/${featured.id}/`} data-category={featured.data.category} data-cursor="Read">
+        <div data-clip><Media src={featured.data.image} alt={featured.data.imageAlt} label="Featured post image" ratio="16 / 10" eager /></div>
+        <div class="feat__body reveal">
+          <span class="tag tag--accent">{featured.data.pinned ? 'Pinned' : 'Latest'} · {featured.data.category}</span>
+          <h2 class="h2">{featured.data.title}</h2>
+          <p class="lede">{featured.data.excerpt}</p>
+          <div class="card__meta"><span>{fmtDate(featured.data.date)}</span><span>{readingTime(featured.body)}</span></div>
+          <span class="link-arrow">Read the essay →</span>
+        </div>
+      </a>
+    </section>
+  )}
+
+  <section class="section">
+    <div class="container">
+      <div class="grid grid-3" data-grid data-stagger>
+        {rest.map((p, i) => <div data-item data-category={p.data.category} hidden={i >= PER_PAGE}><PostCard post={p} /></div>)}
+      </div>
+      <p class="muted empty" data-empty hidden>No posts in this category yet.</p>
+      <div class="more"><button class="btn btn--ghost" type="button" data-more hidden={rest.length <= PER_PAGE}>Load more</button></div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .feat { display: grid; grid-template-columns: 1.2fr 1fr; gap: clamp(24px, 4vw, 64px); align-items: center; }
+  .feat :global(.media) { border-radius: var(--radius-lg); }
+  .feat__body { display: grid; gap: 18px; }
+  .feat .link-arrow { width: fit-content; }
+  .more { display: flex; justify-content: center; margin-top: 40px; }
+  [data-item] :global(.card) { height: 100%; }
+  @media (max-width: 860px) { .feat { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+  const PER_PAGE = 9;
+  const items = Array.from(document.querySelectorAll<HTMLElement>('[data-item]'));
+  const more = document.querySelector<HTMLButtonElement>('[data-more]')!;
+  const empty = document.querySelector<HTMLElement>('[data-empty]')!;
+  let cat = 'All';
+  let shown = PER_PAGE;
+  const render = () => {
+    const match = items.filter((el) => cat === 'All' || el.dataset.category === cat);
+    items.forEach((el) => (el.hidden = true));
+    match.slice(0, shown).forEach((el) => { el.hidden = false; el.style.opacity = '1'; el.style.transform = 'none'; });
+    more.hidden = match.length <= shown;
+    empty.hidden = match.length > 0;
+  };
+  document.querySelectorAll<HTMLButtonElement>('[data-filter]').forEach((b) =>
+    b.addEventListener('click', () => {
+      document.querySelectorAll('[data-filter]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      cat = b.dataset.filter!;
+      shown = PER_PAGE;
+      render();
+    }),
+  );
+  more.addEventListener('click', () => { shown += PER_PAGE; render(); });
+</script>

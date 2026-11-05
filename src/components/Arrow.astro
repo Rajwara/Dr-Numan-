@@ -1,0 +1,7 @@
+---
+const { dir = 'up-right' } = Astro.props;
+const rot = { 'up-right': 0, right: 45, down: 135, left: 225 }[dir as string] ?? 0;
+---
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style={`transform:rotate(${rot}deg)`}>
+  <path d="M7 17 17 7M8 7h9v9" />
+</svg>

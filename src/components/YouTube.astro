@@ -1,0 +1,38 @@
+---
+/** Lazy YouTube facade: loads the iframe only on click (page speed). */
+import Media from './Media.astro';
+interface Props { id?: string; title: string; thumbnail?: string }
+const { id, title, thumbnail } = Astro.props;
+const thumb = thumbnail || (id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : undefined);
+---
+{id ? (
+  <div class="yt" data-yt={id} data-title={title}>
+    <img src={thumb} alt="" loading="lazy" />
+    <button class="yt__play" type="button" aria-label={`Play: ${title}`}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5.5v13l11-6.5z"/></svg>
+    </button>
+  </div>
+) : (
+  <Media src={thumbnail} label="Video player: add youtubeId" ratio="16 / 9" dark />
+)}
+
+<style>
+  .yt { position: relative; aspect-ratio: 16/9; background: #000; overflow: hidden; border-radius: inherit; }
+  .yt img { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
+  .yt :global(iframe) { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .yt__play { position: absolute; inset: 0; margin: auto; width: 84px; height: 84px; border-radius: 50%; border: 0; cursor: pointer; background: var(--accent); color: #fff; display: grid; place-items: center; transition: transform .3s var(--ease); }
+  .yt__play:hover { transform: scale(1.08); }
+  .yt__play svg { width: 34px; height: 34px; margin-left: 4px; }
+</style>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-yt]').forEach((el) => {
+    el.querySelector('button')?.addEventListener('click', () => {
+      const f = document.createElement('iframe');
+      f.src = `https://www.youtube-nocookie.com/embed/${el.dataset.yt}?autoplay=1&rel=0`;
+      f.title = el.dataset.title || 'Video';
+      f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+      f.allowFullscreen = true;
+      el.replaceChildren(f);
+    });
+  });
+</script>

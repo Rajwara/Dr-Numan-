@@ -1,0 +1,90 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Button from '../components/Button.astro';
+import { medicalPractice, appointments, papers, lectures, expertise } from '../data/site';
+---
+<Base title="Medicine & Academia" description="Dr. Nauman Niaz's sports medicine practice, academic appointments, research papers and lectures, for medical peers, universities and event organisers.">
+  <PageHeader
+    eyebrow="Medicine & Academia"
+    title="Medicine & Academia"
+    summary="Placeholder two-line summary of his clinical specialisation and academic standing, written for medical peers and universities."
+    imageLabel="Clinical or lecture photo"
+  />
+
+  <section class="section" style="padding-top:clamp(24px,4vw,48px)">
+    <div class="container ma">
+      <!-- 2.0 MEDICAL PRACTICE -->
+      <div class="ma__block">
+        <div class="ma__head"><span class="eyebrow">01 · Medical practice</span><h2 class="h2" data-split>Practice</h2></div>
+        <ul class="rows" data-stagger style="list-style:none;margin:0;padding:0">
+          {medicalPractice.map((m) => <li class="row"><span><span class="row__meta">{m.role}</span><br /><span class="row__title">{m.detail}</span></span><span class="row__meta">{m.years}</span></li>)}
+        </ul>
+      </div>
+
+      <!-- 3.0 ACADEMIC APPOINTMENTS -->
+      <div class="ma__block">
+        <div class="ma__head"><span class="eyebrow">02 · Academic appointments</span><h2 class="h2" data-split>Appointments</h2></div>
+        <ul class="rows" data-stagger style="list-style:none;margin:0;padding:0">
+          {appointments.map((a) => <li class="row"><span><span class="row__title">{a.title}</span><br /><span class="row__meta">{a.institution}</span></span><span class="row__meta">{a.years}</span></li>)}
+        </ul>
+      </div>
+
+      <!-- 4.0 RESEARCH & PAPERS -->
+      <div class="ma__block" id="research">
+        <div class="ma__head"><span class="eyebrow">03 · Research &amp; papers</span><h2 class="h2" data-split>Research</h2></div>
+        <ol class="papers" data-stagger>
+          {papers.map((p) => (
+            <li class="paper">
+              <p>{p.citation} <em>{p.journal}</em>, {p.year}.</p>
+              <a class="link-arrow" href={p.doi} target="_blank" rel="noopener noreferrer">DOI ↗</a>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <!-- 5.0 LECTURES (optional) -->
+      {lectures.length > 0 && (
+        <div class="ma__block">
+          <div class="ma__head"><span class="eyebrow">04 · Lectures &amp; conferences</span><h2 class="h2" data-split>Lectures</h2></div>
+          <ul class="rows" data-stagger style="list-style:none;margin:0;padding:0">
+            {lectures.map((l) => <li class="row"><span><span class="row__title">{l.topic}</span><br /><span class="row__meta">{l.event}</span></span><span class="row__meta">{l.year}</span></li>)}
+          </ul>
+        </div>
+      )}
+
+      <!-- 6.0 EXPERTISE (optional) -->
+      {expertise.length > 0 && (
+        <div class="ma__block">
+          <div class="ma__head"><span class="eyebrow">05 · Areas of expertise</span><h2 class="h2" data-split>Expertise</h2></div>
+          <ul class="exp" data-stagger>{expertise.map((e) => <li>{e}</li>)}</ul>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- 7.0 CTA -->
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div class="cta-band reveal">
+        <span class="eyebrow">Speaking</span>
+        <h2 class="h2">Conferences, keynotes <em>&amp; lectures.</em></h2>
+        <div><Button href="/contact/?type=speaking" variant="light">Invite Dr. Niaz to speak</Button></div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .ma { display: grid; gap: clamp(64px, 8vw, 120px); }
+  .ma__block { display: grid; grid-template-columns: 0.8fr 1.4fr; gap: clamp(24px, 5vw, 80px); }
+  .ma__head { display: grid; gap: 14px; align-content: start; position: sticky; top: 110px; align-self: start; }
+  .papers { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); counter-reset: p; }
+  .paper { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: baseline; padding: 22px 0; border-bottom: 1px solid var(--line); }
+  .paper p { margin: 0; }
+  .paper em { font-style: italic; }
+  .exp { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+  .exp li { padding: 12px 22px; border-radius: 999px; border: 1px solid var(--line); font-size: 1.05rem; font-weight: 500; transition: background .3s, color .3s; }
+  .exp li:hover { background: var(--ink); color: #fff; }
+  @media (max-width: 860px) { .ma__block { grid-template-columns: 1fr; } .ma__head { position: static; } }
+</style>

@@ -1,0 +1,6 @@
+---
+import YouTube from '../YouTube.astro';
+const { id, title = 'Video' } = Astro.props;
+---
+<div class="vid"><YouTube id={id} title={title} /></div>
+<style>.vid { margin: 2em 0; border-radius: var(--radius); overflow: hidden; }</style>

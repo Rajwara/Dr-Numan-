@@ -1,0 +1,118 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Media from '../components/Media.astro';
+import Button from '../components/Button.astro';
+import YouTube from '../components/YouTube.astro';
+import { programmes, interviews, showreel, networks } from '../data/site';
+---
+<Base title="Broadcasting" description="Dr. Nauman Niaz's television and commentary career: programmes hosted, notable interviews, and the networks and tournaments he has covered.">
+  <PageHeader
+    eyebrow="Broadcasting"
+    title="On air"
+    summary="Placeholder one-line summary of his on-air career: decades of hosting, analysis and commentary."
+    imageLabel="Studio or on-location broadcasting still"
+  />
+
+  <!-- 2.0 PROGRAMMES -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head"><div><span class="eyebrow">Programmes hosted</span><h2 class="h2" data-split>The <em>programmes</em></h2></div></div>
+      <div class="progs">
+        {programmes.map((p, i) => (
+          <article class="prog zoom reveal">
+            <div class="prog__img" data-clip><Media src={p.image} alt={p.title} label="Programme still" ratio="16 / 10" dark={i % 2 === 0} /></div>
+            <div class="prog__body">
+              <span class="prog__n">0{i + 1}</span>
+              <h3 class="h2">{p.title}</h3>
+              <dl class="prog__meta">
+                <div><dt>Channel</dt><dd>{p.channel}</dd></div>
+                <div><dt>Years</dt><dd>{p.years}</dd></div>
+                <div><dt>Format</dt><dd>{p.format}</dd></div>
+              </dl>
+              <p class="lede">{p.text}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 3.0 NOTABLE INTERVIEWS -->
+  <section class="section section--dark">
+    <div class="container">
+      <div class="section-head"><div><span class="eyebrow">Notable interviews</span><h2 class="h2" data-split>Across the <em>table</em></h2></div></div>
+      <div class="ivs" data-stagger>
+        {interviews.map((g) => {
+          const Tag = g.link ? 'a' : 'div';
+          return (
+            <Tag class="iv" {...(g.link ? { href: g.link, 'data-cursor': 'Watch' } : {})}>
+              <span class="iv__year">{g.year}</span>
+              <strong class="iv__name">{g.name}</strong>
+              <span class="muted">{g.role}</span>
+              {g.link && <span class="iv__go">Watch ↗</span>}
+            </Tag>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <!-- 4.0 SHOWREEL (optional) -->
+  {showreel.length > 0 && (
+    <section class="section">
+      <div class="container">
+        <div class="section-head"><div><span class="eyebrow">Showreel</span><h2 class="h2">Showreel</h2></div></div>
+        <div class:list={['grid', showreel.length > 1 ? 'grid-3' : '']}>
+          {showreel.map((v) => <div style="border-radius:var(--radius);overflow:hidden"><YouTube id={v.youtubeId} title={v.title} /></div>)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- 5.0 NETWORKS & EVENTS (optional, text list) -->
+  {networks.length > 0 && (
+    <section class="section--tight nets">
+      <div class="container"><span class="eyebrow">Networks, boards &amp; tournaments</span></div>
+      <div class="marquee" style="margin-top:28px">
+        {[0, 1].map(() => <div class="marquee__track">{networks.map((n) => <span class="nets__item">{n}<i>✦</i></span>)}</div>)}
+      </div>
+    </section>
+  )}
+
+  <!-- 6.0 CTA -->
+  <section class="section">
+    <div class="container">
+      <div class="cta-band reveal">
+        <span class="eyebrow">Conversations</span>
+        <h2 class="h2">The conversation <em>continues.</em></h2>
+        <div><Button href="/conversations/" variant="light">Watch the latest episode</Button></div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .progs { display: grid; gap: clamp(48px, 7vw, 110px); }
+  .prog { display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(24px, 5vw, 80px); align-items: center; }
+  .prog:nth-child(even) .prog__img { order: 2; }
+  .prog__img :global(.media) { border-radius: var(--radius-lg); }
+  .prog__body { display: grid; gap: 20px; }
+  .prog__n { font-size: .8rem; color: var(--accent-deep); }
+  .prog__meta { display: flex; flex-wrap: wrap; gap: 12px 36px; margin: 0; padding: 16px 0; border-block: 1px solid var(--line); }
+  .prog__meta dt { font-size: .74rem; color: var(--muted); }
+  .prog__meta dd { margin: 0; font-weight: 500; }
+  @media (max-width: 860px) { .prog { grid-template-columns: 1fr; } .prog:nth-child(even) .prog__img { order: 0; } }
+
+  .ivs { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid rgba(255,255,255,.12); }
+  .iv { display: grid; gap: 4px; padding: 28px 24px 28px 0; border-bottom: 1px solid rgba(255,255,255,.12); position: relative; transition: padding .5s var(--ease); }
+  .iv__year { font-size: .78rem; color: var(--accent); }
+  .iv__name { font-size: 1.5rem; font-weight: 500; letter-spacing: -0.04em; }
+  .iv__go { font-size: .82rem; color: var(--accent); margin-top: 6px; }
+  a.iv:hover { padding-left: 14px; }
+  @media (max-width: 860px) { .ivs { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 520px) { .ivs { grid-template-columns: 1fr; } }
+
+  .nets__item { display: inline-flex; align-items: center; gap: 56px; font-size: clamp(1.5rem, 3vw, 2.4rem); font-weight: 500; letter-spacing: -0.04em; white-space: nowrap; color: var(--ink-2); }
+  .nets__item i { font-style: normal; font-size: .5em; color: var(--accent); }
+</style>

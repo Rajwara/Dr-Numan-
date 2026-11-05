@@ -1,0 +1,24 @@
+---
+import Media from './Media.astro';
+const { ep } = Astro.props;
+const d = ep.data;
+const thumb = d.thumbnail || (d.youtubeId ? `https://i.ytimg.com/vi/${d.youtubeId}/hqdefault.jpg` : undefined);
+---
+<a class="card ep-card" href={`/conversations/${ep.id}/`} data-guest={d.guest} data-series={d.series}>
+  <div class="ep-card__thumb">
+    <Media src={thumb} alt={`${d.guest}: ${d.title}`} label="Episode thumbnail" ratio="16 / 10" dark />
+    <span class="tag tag--dark ep-card__fmt">{d.format}</span>
+    <span class="ep-card__dur">{d.duration}</span>
+  </div>
+  <div class="card__body">
+    <span class="muted" style="font-size:.85rem">{d.guest} · {d.guestRole}</span>
+    <h3 class="h3">{d.title}</h3>
+    <span class="link-arrow" style="margin-top:6px">{d.format === 'Video' ? 'Watch' : 'Listen'} →</span>
+  </div>
+</a>
+<style>
+  .ep-card__thumb { position: relative; }
+  .ep-card__fmt { position: absolute; top: 14px; left: 14px; }
+  .ep-card__dur { position: absolute; bottom: 14px; right: 14px; font-size: .76rem; color: #fff; background: rgba(0,0,0,.55); padding: 4px 10px; border-radius: 999px; backdrop-filter: blur(6px); }
+  .link-arrow { width: fit-content; }
+</style>

@@ -1,0 +1,62 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Media from '../components/Media.astro';
+import Button from '../components/Button.astro';
+import { site, memorabilia, memorabiliaStory } from '../data/site';
+---
+<Base title="Memorabilia" description={`Highlights from Dr. Nauman Niaz's collection of cricket memorabilia. Explore the full collection at ${site.museum.name}.`}>
+  <PageHeader
+    eyebrow="Memorabilia"
+    title="The collection"
+    summary="Placeholder: one or two sentences on the collection and how it started. This page is a teaser; the full collection lives at the museum."
+    showImage={false}
+  />
+
+  <!-- 2.0 HIGHLIGHTS (masonry) -->
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div class="masonry" data-stagger>
+        {memorabilia.map((m, i) => (
+          <figure class="mi zoom" data-cursor="View">
+            <Media src={m.image} alt={m.caption} label="Collection photo" ratio={m.tall ? '3 / 4' : '4 / 3'} dark={i % 3 !== 1} />
+            <figcaption>{m.caption}</figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 3.0 THE STORY (optional) -->
+  {memorabiliaStory.length > 0 && (
+    <section class="section section--dark">
+      <div class="container story">
+        <div><span class="eyebrow">The story</span><h2 class="h2" data-split>How the collection <em>was built</em></h2></div>
+        <div class="story__p" data-stagger>{memorabiliaStory.map((p) => <p class="lede" style="color:#c9c9ce">{p}</p>)}</div>
+      </div>
+    </section>
+  )}
+
+  <!-- 4.0 VISIT THE MUSEUM -->
+  <section class="section">
+    <div class="container">
+      <div class="cta-band visit reveal">
+        <span class="eyebrow">Visit the museum</span>
+        <h2 class="h1">{site.museum.name}</h2>
+        <p class="lede" style="color:#bdbdc3">{site.museum.location}</p>
+        <div><Button href={site.museum.url} variant="light" external>Explore the collection</Button></div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .masonry { columns: 3 280px; column-gap: 20px; }
+  .mi { break-inside: avoid; margin: 0 0 20px; display: grid; gap: 10px; }
+  .mi :global(.media) { border-radius: var(--radius); }
+  .mi figcaption { font-size: .88rem; color: var(--muted); }
+  .story { display: grid; grid-template-columns: 1fr 1.2fr; gap: clamp(32px, 6vw, 96px); }
+  .story__p p { margin: 0 0 1.2em; }
+  .visit { text-align: left; min-height: 420px; align-content: end; }
+  @media (max-width: 860px) { .story { grid-template-columns: 1fr; } }
+</style>

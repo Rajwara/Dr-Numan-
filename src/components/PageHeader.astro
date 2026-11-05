@@ -1,0 +1,35 @@
+---
+import Media from './Media.astro';
+interface Props { eyebrow?: string; title: string; summary?: string; image?: string; imageLabel?: string; imageAlt?: string; showImage?: boolean; dark?: boolean }
+const { eyebrow, title, summary, image, imageLabel = 'Page header photo', imageAlt = '', showImage = true, dark = false } = Astro.props;
+---
+<header class:list={['ph-head', dark && 'ph-head--dark']}>
+  <div class="container ph-head__grid">
+    <div class="ph-head__text reveal">
+      {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+      <h1 class="h1">{title}</h1>
+      {summary && <p class="lede">{summary}</p>}
+      <slot />
+    </div>
+    {showImage && (
+      <div class="ph-head__img reveal">
+        <Media src={image} alt={imageAlt} label={imageLabel} ratio="4 / 5" dark eager />
+      </div>
+    )}
+  </div>
+  <div class="ph-head__word" aria-hidden="true">{title}</div>
+</header>
+
+<style>
+  .ph-head { position: relative; padding-top: clamp(120px, 14vw, 180px); padding-bottom: clamp(48px, 7vw, 96px); overflow: hidden; }
+  .ph-head__grid { display: grid; grid-template-columns: 1.25fr 0.75fr; gap: clamp(24px, 5vw, 80px); align-items: end; position: relative; z-index: 1; }
+  .ph-head__text { display: grid; gap: 22px; align-content: end; }
+  .ph-head__img :global(.media) { border-radius: var(--radius-lg); }
+  .ph-head__word {
+    position: absolute; left: 0; right: 0; bottom: -0.18em; text-align: center; pointer-events: none;
+    font-size: clamp(5rem, 19vw, 18rem); font-weight: 500; letter-spacing: -0.07em; line-height: 1; white-space: nowrap;
+    background: linear-gradient(180deg, rgba(17,17,19,0.07), rgba(17,17,19,0)); -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .ph-head:not(:has(.ph-head__img)) .ph-head__grid { grid-template-columns: 1fr; }
+  @media (max-width: 820px) { .ph-head__grid { grid-template-columns: 1fr; } .ph-head__img { max-width: 420px; } }
+</style>
