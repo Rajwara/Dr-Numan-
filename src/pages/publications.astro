@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import PageHeader from '../components/PageHeader.astro';
+import BookWheel from '../components/BookWheel.astro';
 import Media from '../components/Media.astro';
 import Button from '../components/Button.astro';
 import { books, articles } from '../data/site';
@@ -10,20 +10,19 @@ const fmt = (d: string) => new Date(d).toLocaleDateString('en-GB', { day: 'numer
 const sorted = [...articles].sort((a, b) => b.date.localeCompare(a.date));
 ---
 <Base title="Publications" description={`Books and articles by Dr. Nauman Niaz on cricket, medicine and history: ${books.length} books and ${articles.length}+ articles and columns.`}>
-  <PageHeader
-    eyebrow="Publications"
-    title="Publications"
-    summary={`Author of ${books.length} books and ${articles.length}+ articles on cricket, medicine and history.`}
-    showImage={false}
-  />
+  <!-- 1.0 PAGE HEADER: book wheel banner (title + summary below it) -->
+  <BookWheel />
 
   <!-- 2.0 BOOKS -->
-  <section class="section" style="padding-top:0">
+  <section class="section">
     <div class="container">
-      <div class="section-head"><div><span class="eyebrow">Books</span><h2 class="h2" data-split>The <em>books</em></h2></div></div>
+      <div class="section-head">
+        <div><span class="eyebrow">Books</span><h2 class="h2" data-split>The <em>books</em></h2></div>
+        <p class="lede reveal" style="margin:0;max-width:34ch">Author of {books.length} books and {articles.length}+ articles on cricket, medicine and history.</p>
+      </div>
       <div class="books">
-        {books.map((b) => (
-          <article class="bk reveal">
+        {books.map((b, i) => (
+          <article class="bk reveal" id={`book-${i + 1}`}>
             <div class="bk__cover" data-tilt><Media src={b.cover} alt={`Cover of ${b.title}`} label="Book cover" ratio="2 / 3" dark /></div>
             <div class="bk__body">
               <span class="muted">{b.publisher} · {b.year}</span>
@@ -93,6 +92,7 @@ const sorted = [...articles].sort((a, b) => b.date.localeCompare(a.date));
 
 <style>
   .books { display: grid; gap: 24px; }
+  .bk { scroll-margin-top: 110px; }
   .bk { display: grid; grid-template-columns: 220px 1fr; gap: clamp(24px, 5vw, 72px); align-items: center; padding: clamp(24px, 3vw, 40px); background: var(--surface); border-radius: var(--radius-lg); }
   .bk__cover :global(.media) { border-radius: 8px; box-shadow: 20px 30px 50px -28px rgba(0,0,0,.55); }
   .bk__body { display: grid; gap: 16px; }

@@ -2,8 +2,8 @@
 import Base from '../layouts/Base.astro';
 import PageHeader from '../components/PageHeader.astro';
 import Button from '../components/Button.astro';
-import { site, biography, qualifications, timeline, honours, quotes, downloads } from '../data/site';
-const fields = ['Medicine', 'Broadcasting', 'Writing', 'Academia'] as const;
+import { site, postnominals, experience, biography, qualifications, timeline, honours, quotes, downloads } from '../data/site';
+const fields = (['Medicine', 'Broadcasting', 'Writing', 'Academia'] as const).filter((f) => timeline.some((t) => t.field === f));
 ---
 <Base title="About" description={`Biography, qualifications, career timeline and honours of ${site.name}: ${site.descriptor}`}>
   <PageHeader
@@ -13,7 +13,9 @@ const fields = ['Medicine', 'Broadcasting', 'Writing', 'Academia'] as const;
     image={site.aboutPortrait}
     imageLabel="Environmental portrait: studio, clinic or library"
     imageAlt="Dr. Nauman Niaz"
-  />
+  >
+    <p class="quals">{postnominals.join(' • ')}</p>
+  </PageHeader>
 
   <!-- 2.0 BIOGRAPHY -->
   <section class="section">
@@ -29,6 +31,34 @@ const fields = ['Medicine', 'Broadcasting', 'Writing', 'Academia'] as const;
             <h2 class="h2" data-split>{b.heading}</h2>
             <div class="prose reveal">{b.body.map((p) => <p>{p}</p>)}</div>
           </section>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE (grouped by organisation) -->
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div class="section-head"><div><span class="eyebrow">Experience</span><h2 class="h2" data-split>Where he has <em>worked</em></h2></div></div>
+      <div class="xp">
+        {experience.map((o) => (
+          <article class="xp__org reveal">
+            <header class="xp__head">
+              <h3 class="h3">{o.org}</h3>
+              <span class="muted">{o.span}</span>
+            </header>
+            <ol class="xp__roles">
+              {o.roles.map((r) => (
+                <li>
+                  <div class="xp__role">
+                    <strong>{r.title}</strong>
+                    <span class="muted">{r.dates}{r.place && ` · ${r.place}`}</span>
+                  </div>
+                  {r.text && <p class="muted">{r.text}</p>}
+                </li>
+              ))}
+            </ol>
+          </article>
         ))}
       </div>
     </div>
@@ -120,6 +150,18 @@ const fields = ['Medicine', 'Broadcasting', 'Writing', 'Academia'] as const;
 </Base>
 
 <style>
+  .xp { display: grid; gap: 20px; }
+  .xp__org { display: grid; grid-template-columns: 0.8fr 1.4fr; gap: clamp(20px, 4vw, 64px); background: var(--surface); border-radius: var(--radius-lg); padding: clamp(24px, 3.5vw, 44px); }
+  .xp__head { display: grid; gap: 8px; align-content: start; }
+  .xp__roles { list-style: none; margin: 0; padding: 0 0 0 22px; border-left: 1px solid var(--line); display: grid; gap: 22px; }
+  .xp__roles li { position: relative; display: grid; gap: 6px; }
+  .xp__roles li::before { content: ''; position: absolute; left: -27px; top: 7px; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px var(--surface); }
+  .xp__role { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; align-items: baseline; }
+  .xp__role strong { font-weight: 500; font-size: 1.05rem; letter-spacing: -0.02em; }
+  .xp__role .muted { font-size: .88rem; }
+  .xp__roles p { margin: 0; font-size: .94rem; max-width: 62ch; }
+  @media (max-width: 760px) { .xp__org { grid-template-columns: 1fr; } }
+  .quals { margin: 0; font-size: .74rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; line-height: 1.8; color: var(--muted); max-width: 60ch; }
   .bio { display: grid; grid-template-columns: 260px 1fr; gap: clamp(32px, 6vw, 96px); }
   .bio__toc { position: sticky; top: 110px; align-self: start; display: grid; gap: 18px; }
   .bio__toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; color: var(--muted); }

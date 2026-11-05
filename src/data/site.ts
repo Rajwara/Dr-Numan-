@@ -17,7 +17,7 @@ export const site = {
   // TODO: 50-word bio, used in footer and meta
   shortBio:
     'Dr. Nauman Niaz is a sports physician, broadcaster, author and cricket historian whose work spans the clinic, the commentary box, the archive and the lecture hall.',
-  heroPortrait: '', // TODO: e.g. '/images/hero-portrait.png' (landscape, min 2400px wide)
+  // Home hero banner: /public/images/hero-desktop-*.{webp,jpg} and hero-mobile-*.{webp,jpg}
   aboutPortrait: '', // TODO: second, environmental portrait (studio, clinic or library)
   location: 'Pakistan', // TODO confirm city for the hero "Based in" line
   timezone: 'Asia/Karachi',
@@ -31,13 +31,23 @@ export const site = {
   formEndpoint: 'https://formspree.io/f/your-form-id', // TODO
 };
 
-export const socials = [
-  // TODO: replace with real profile URLs
-  { label: 'YouTube', url: 'https://youtube.com/' },
-  { label: 'X / Twitter', url: 'https://x.com/' },
-  { label: 'LinkedIn', url: 'https://linkedin.com/' },
-  { label: 'Instagram', url: 'https://instagram.com/' },
+/** Post-nominal qualifications line, as he uses it. Shown on the Home banner and About page. */
+export const postnominals = [
+  'Post Doc (Oxford)',
+  'PhD (UWA)',
+  'FRCP (London, Glasgow, Edinburgh, Ireland)',
+  'CCST (Endo, UK)',
+  'MSc Biomechanics (UWA)',
+  'MRCP (UK)',
+  'MBBS (PB)',
 ];
+
+export const socials = [
+  { label: 'LinkedIn', url: 'https://www.linkedin.com/in/dr-nauman-niaz-b53930165/' },
+  { label: 'Instagram', url: 'https://www.instagram.com/dr.naumanniaz/' },
+  { label: 'Facebook', url: 'https://www.facebook.com/DrNaumaNiaz/' },
+  // TODO: add YouTube and X / Twitter if he has public profiles
+]
 
 export const subscribeLinks = [
   // TODO: Conversations subscribe links
@@ -62,7 +72,7 @@ export const nav = [
 /** Home 2.0: credentials strip. Plain text, 4–6 facts, numbers from CV. */
 export const credentials = [
   // TODO: all numbers from CV
-  { value: '25+', label: 'Years in broadcasting' },
+  { value: '34+', label: 'Years in broadcasting' }, // PTV since 1992
   { value: '10', label: 'Books published' },
   { value: '500+', label: 'Articles written' },
   { value: '6', label: 'Academic appointments' },
@@ -171,32 +181,16 @@ export const papers = [
 
 /** Broadcasting 2.0. No channel logos without permission. */
 export const programmes = [
-  // TODO: programme list from Dr. Niaz
   {
-    title: 'Programme title',
-    channel: 'Channel name',
-    years: '2010 – 2018',
-    format: 'Studio analysis',
-    text: 'One-line description of the programme and his role on it.',
+    title: 'Cricket host & analyst',
+    channel: 'PTV (Pakistan Television)',
+    years: '1992 – present',
+    format: 'Studio analysis & live coverage',
+    text: 'More than three decades presenting and analysing international and domestic cricket on national television.',
     image: '',
   },
-  {
-    title: 'Programme title',
-    channel: 'Channel name',
-    years: '2004 – 2010',
-    format: 'Live commentary',
-    text: 'One-line description of the programme and his role on it.',
-    image: '',
-  },
-  {
-    title: 'Programme title',
-    channel: 'Channel name',
-    years: '1998 – 2004',
-    format: 'Interview series',
-    text: 'One-line description of the programme and his role on it.',
-    image: '',
-  },
-];
+  // TODO: add named programmes / series with their years
+]
 
 /** Broadcasting 3.0. Where no clip exists, show name only (leave link empty). */
 export const interviews = [
@@ -213,38 +207,81 @@ export const interviews = [
 export const showreel: { youtubeId: string; title: string }[] = [];
 
 /** Broadcasting 5.0 (optional) + hero "as seen on". Text list, safer than logos. */
-export const networks = ['Network one', 'Network two', 'Tournament one', 'Tournament two', 'Board one', 'Network three'];
+export const networks = ['PTV', 'PTV Sports', 'Pakistan Cricket Board', 'Asian Cricket Council']; // TODO: add tournaments covered
 
 /** About 3.0 */
 export const qualifications = [
-  // TODO: from CV
-  { title: 'MBBS', institution: 'Institution', year: '0000' },
-  { title: 'Postgraduate qualification in Sports Medicine', institution: 'Institution', year: '0000' },
-  { title: 'PhD', institution: 'Institution', year: '0000' },
-  { title: 'Fellowship', institution: 'Professional body', year: '0000' },
-  { title: 'Member', institution: 'Professional body', year: '0000' },
-];
+  // Supplied by Dr. Niaz. TODO: add the year for each from the CV.
+  { title: 'Postdoctoral Fellowship', institution: 'University of Oxford', year: '' },
+  { title: 'PhD', institution: 'University of Western Australia (UWA)', year: '' },
+  { title: 'FRCP: Fellow of the Royal College of Physicians', institution: 'London, Glasgow, Edinburgh and Ireland', year: '' },
+  { title: 'CCST in Endocrinology', institution: 'United Kingdom', year: '' },
+  { title: 'MSc Biomechanics', institution: 'University of Western Australia (UWA)', year: '' },
+  { title: 'MRCP', institution: 'United Kingdom', year: '' },
+  { title: 'MBBS', institution: 'PB', year: '' }, // TODO: confirm the full institution name for "PB"
+]
 
 /** About 4.0: 15–25 entries, colour-coded by field. */
 export type Field = 'Medicine' | 'Broadcasting' | 'Writing' | 'Academia';
 export const timeline: { year: string; title: string; text: string; field: Field }[] = [
-  // TODO: from CV
-  { year: '1990', title: 'Qualifies in medicine', text: 'One line describing the milestone.', field: 'Medicine' },
-  { year: '1994', title: 'First broadcast', text: 'One line describing the milestone.', field: 'Broadcasting' },
-  { year: '1997', title: 'Sports medicine role', text: 'One line describing the milestone.', field: 'Medicine' },
-  { year: '2000', title: 'First book published', text: 'One line describing the milestone.', field: 'Writing' },
-  { year: '2004', title: 'Hosts major programme', text: 'One line describing the milestone.', field: 'Broadcasting' },
-  { year: '2008', title: 'Academic appointment', text: 'One line describing the milestone.', field: 'Academia' },
-  { year: '2012', title: 'Multi-volume history', text: 'One line describing the milestone.', field: 'Writing' },
-  { year: '2016', title: 'Senior broadcasting role', text: 'One line describing the milestone.', field: 'Broadcasting' },
-  { year: '2020', title: 'Professorship', text: 'One line describing the milestone.', field: 'Academia' },
-  { year: '2024', title: 'Launches Conversations', text: 'One line describing the milestone.', field: 'Broadcasting' },
-];
+  // From his experience (LinkedIn). TODO: add milestones in writing and academia from the CV (15–25 entries in total).
+  { year: '1992', title: 'Cricket host & analyst, PTV', text: 'Begins a broadcasting career on Pakistan Television that continues today.', field: 'Broadcasting' },
+  { year: '1998', title: 'Manager Coordination, Asian Cricket Council', text: 'Media coordination for the Pakistan Cricket Board and the Asian Cricket Council.', field: 'Broadcasting' },
+  { year: '1999', title: 'Media Manager, Pakistan Cricket Board', text: 'Media manager and cricket analyst for the PCB, Lahore.', field: 'Broadcasting' },
+  { year: '2002', title: 'Clinical Endocrinologist', text: 'Begins clinical practice at the Mahmooda Niaz Clinic.', field: 'Medicine' },
+  { year: '2012', title: 'Head of Content, PTV', text: 'Leads content for Pakistan Television.', field: 'Broadcasting' },
+  { year: '2013', title: 'Head of Operations & Content, PTV', text: 'Takes on operations alongside content.', field: 'Broadcasting' },
+  { year: '2014', title: 'Director Sports, PTV Sports', text: 'Channel head of PTV Sports until 2022.', field: 'Broadcasting' },
+  { year: '2018', title: 'Director, PTV Training Academy', text: 'Leads the broadcaster’s training academy in Islamabad.', field: 'Academia' },
+  { year: '2024', title: 'Director Special Assignments, PTV', text: 'Current role, Islamabad.', field: 'Broadcasting' },
+]
+
+/** About: experience, grouped by organisation (from his LinkedIn profile). */
+export const experience: {
+  org: string;
+  span: string;
+  roles: { title: string; dates: string; place?: string; text?: string }[];
+}[] = [
+  {
+    org: 'Pakistan Television Corporation (PTV)',
+    span: '1992 – present',
+    roles: [
+      { title: 'Director Special Assignments', dates: 'May 2024 – present', place: 'Islamabad' },
+      { title: 'Cricket Host / Analyst', dates: '1992 – present' },
+      {
+        title: 'Director Sports',
+        dates: 'Feb 2014 – May 2022',
+        text: 'As channel head of PTV Sports, responsible for the acquisition of live international and domestic content, forecasting, assessment of consumer demand and the channel’s future direction.',
+      },
+      { title: 'Director of Training Academy', dates: '2018 – 2019', place: 'Islamabad' },
+      { title: 'Head of Operations & Content', dates: '2013 – 2014' },
+      { title: 'Head of Content', dates: '2012 – 2013' },
+    ],
+  },
+  {
+    org: 'Mahmooda Niaz Clinic',
+    span: '2002 – present',
+    roles: [{ title: 'Clinical Endocrinologist', dates: '2002 – present', place: 'Pakistan' }],
+  },
+  {
+    org: 'Pakistan Cricket Board',
+    span: '1998 – 2001',
+    roles: [
+      { title: 'Media Manager', dates: '1999 – 2001', place: 'Lahore', text: 'Cricket analyst of the Pakistan Cricket Board.' },
+      {
+        title: 'Manager Coordination, Asian Cricket Council',
+        dates: '1998 – 1999',
+        place: 'Islamabad',
+        text: 'Media Coordinator of the Pakistan Cricket Board, Manager Coordination of the Asian Cricket Council and Manager Media of the Pakistan Cricket Board.',
+      },
+    ],
+  },
+]
 
 /** About 5.0 */
 export const honours = [
   // TODO: from CV. If none are public, empty this array and the section hides.
-  { title: 'Award name', body: 'Awarding body', year: '0000' },
+  { title: 'Tamgha-i-Imtiaz (TI)', body: 'Government of Pakistan', year: '' }, // TODO: confirm year
   { title: 'Honorary position', body: 'Institution', year: '0000' },
   { title: 'Notable appointment', body: 'Organisation', year: '0000' },
 ];
@@ -272,11 +309,11 @@ export const biography = [
 
 /** Medicine & Academia */
 export const medicalPractice = [
-  // TODO: from CV. No patient information of any kind.
-  { role: 'Specialisation', detail: 'Sports medicine', years: '' },
-  { role: 'Team physician', detail: 'Team or board name', years: '0000 – 0000' },
-  { role: 'Medical consultant', detail: 'Institution', years: '0000 – 0000' },
-];
+  // No patient information of any kind.
+  { role: 'Specialisation', detail: 'Clinical endocrinology', years: '' },
+  { role: 'Clinical Endocrinologist', detail: 'Mahmooda Niaz Clinic, Pakistan', years: '2002 – present' },
+  // TODO: add teams or boards served as physician, with years
+]
 export const appointments = [
   { title: 'Professor', institution: 'University', years: '0000 – present' },
   { title: 'Visiting lecturer', institution: 'University', years: '0000 – 0000' },

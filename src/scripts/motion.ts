@@ -101,7 +101,7 @@ function heroIntro() {
   if (!hero) return;
   const q = gsap.utils.selector(hero);
   const tl = gsap.timeline({ defaults: { ease: EASE } });
-  tl.from(q('[data-hero-portrait]'), { scale: 1.12, yPercent: 8, opacity: 0, duration: 2, ease: 'expo.out' }, 0)
+  tl.from(q('[data-hero-portrait]'), { scale: 1.18, opacity: 0, filter: 'blur(12px)', duration: 2.2, ease: 'expo.out', clearProps: 'filter' }, 0)
     .from(q('[data-hero-word] span'), { yPercent: 100, opacity: 0, duration: 1.6, stagger: 0.06 }, 0.1)
     .from(q('[data-hero-eyebrow]'), { y: 20, opacity: 0, duration: 1 }, 0.25)
     .from(q('[data-hero-sub] > *'), { y: 24, opacity: 0, duration: 1.1, stagger: 0.08 }, 0.65)
@@ -112,7 +112,7 @@ function heroIntro() {
   q('[data-hero-title]').forEach((t) => splitReveal(t as HTMLElement, 0.3, false));
 
   // scroll-out: portrait drifts, wordmark spreads
-  gsap.to(q('[data-hero-portrait]'), { yPercent: 12, scale: 1.04, ease: 'none', scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true } });
+  gsap.to(q('[data-hero-portrait]'), { yPercent: 10, scale: 1.12, ease: 'none', scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true } });
   gsap.to(q('[data-hero-word]'), { yPercent: 30, letterSpacing: '0.02em', opacity: 0.4, ease: 'none', scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true } });
 }
 

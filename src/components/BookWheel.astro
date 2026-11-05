@@ -1,0 +1,551 @@
+---
+/**
+ * Book wheel banner for the Publications page.
+ * Adapted from the supplied book-wheel.html: covers orbit a rotating dial,
+ * autoplay + drag/swipe + arrow keys. Books come from `books` in src/data/site.ts;
+ * any book without a `cover` gets a generated placeholder cover.
+ * Clicking the centre book scrolls to its entry further down the page.
+ */
+import { books, site } from '../data/site';
+const data = books.map((b, i) => ({
+  src: b.cover || '',
+  title: b.title,
+  author: site.name,
+  label: b.year || `Book ${String(i + 1).padStart(2, '0')}`,
+  href: `#book-${i + 1}`,
+}));
+---
+<section class="book-wheel" id="bookWheel" aria-roledescription="carousel" aria-label="Books by Dr. Nauman Niaz" data-books={JSON.stringify(data)} data-ring="Dr. Nauman Niaz ◆ Books ◆ " data-cursor="Drag">
+  <div class="bw-tab" aria-hidden="true"></div>
+
+  <div class="bw-header">
+    <span class="bw-plus" aria-hidden="true">+</span>
+    <span>{site.name}</span>
+    <span class="bw-gap" aria-hidden="true"></span>
+    <h1>Publications</h1>
+    <span class="bw-plus" aria-hidden="true">+</span>
+  </div>
+
+  <div class="bw-controls">
+    <button type="button" class="bw-btn" data-dir="-1" aria-label="Previous book">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M9 2 4 7l5 5"/></svg>
+    </button>
+    <span class="bw-count" aria-hidden="true"></span>
+    <button type="button" class="bw-btn" data-dir="1" aria-label="Next book">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m5 2 5 5-5 5"/></svg>
+    </button>
+  </div>
+
+  <p class="bw-sr" aria-live="polite"></p>
+</section>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet" />
+
+<style is:global>
+.book-wheel {
+  --bg: #e2e2e4;
+  --ink: #161616;
+  --muted: #8f8f8f;
+  --accent: #e8711c;
+  --font: "Michroma", "Inter Tight", Arial, sans-serif;
+
+  position: relative;
+  width: 100%;
+  height: clamp(560px, 100vh, 960px);
+  height: clamp(560px, 100svh, 960px);
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 42%, #efeff1 0%, var(--bg) 62%, #d6d6d9 100%);
+  color: var(--ink);
+  font-family: var(--font);
+  touch-action: pan-y;              /* vertical page scroll still works on phones */
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+}
+.book-wheel.is-dragging { cursor: grabbing; }
+.book-wheel *, .book-wheel *::before, .book-wheel *::after { box-sizing: border-box; }
+
+/* ---------- Header strip ---------- */
+.bw-tab {
+  position: absolute; top: clamp(96px, 11%, 112px); left: 50%;
+  width: clamp(60px, 10%, 120px); height: 4px; border-radius: 4px;
+  transform: translateX(-50%);
+  background: var(--accent);
+  z-index: 3000;
+}
+.bw-header {
+  position: absolute; top: clamp(104px, 12%, 124px); left: 0; right: 0;  /* clears the fixed site header */
+  display: grid;
+  grid-template-columns: auto 1fr auto 1fr auto;
+  gap: 8px;
+  align-items: center;
+  padding: 0 clamp(16px, 3.6%, 48px);
+  font-size: clamp(9px, 1.05vw, 14px);
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  z-index: 3000;
+  pointer-events: none;
+}
+.bw-header span:nth-child(2), .bw-header span:nth-child(4) { text-align: center; }
+.bw-gap { width: clamp(90px, 18%, 240px); }
+.bw-plus { font-size: 1.4em; font-weight: 400; color: #6d6d6d; line-height: 1; }
+@media (max-width: 640px) {
+  .bw-header { top: 92px; grid-template-columns: 1fr 1fr; }
+  .bw-header .bw-plus, .bw-header .bw-gap { display: none; }
+  .bw-header span:nth-child(2) { text-align: left; }
+  .bw-header span:nth-child(4) { text-align: right; }
+}
+
+/* ---------- Dial behind the cards ---------- */
+.bw-dial {
+  position: absolute; left: 0; top: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+.bw-dial circle { fill: none; stroke: var(--muted); stroke-width: 2; }
+.bw-dial text {
+  font-family: var(--font);
+  font-size: 24px;
+  fill: #a9a9a9;
+  letter-spacing: .08em;
+}
+
+/* Title that orbits with each book and lands on top of the dial */
+.bw-label {
+  position: absolute; left: 0; top: 0;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  font-size: clamp(11px, 1.45vw, 19px);
+  white-space: nowrap;
+  text-transform: uppercase;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+.bw-label::before {
+  content: "";
+  width: 0; height: 0;
+  border-left: .5em solid transparent;
+  border-right: .5em solid transparent;
+  border-bottom: .8em solid var(--ink);
+}
+
+/* ---------- Cards ---------- */
+.bw-card {
+  position: absolute; left: 0; top: 0;
+  padding: 0; margin: 0; border: 0;
+  border-radius: 5.5% / 3.7%;
+  background: #111;
+  overflow: hidden;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, .14),
+    0 26px 60px rgba(0, 0, 0, .3);
+  will-change: transform;
+  -webkit-tap-highlight-color: transparent;
+}
+.book-wheel.is-dragging .bw-card { cursor: grabbing; }
+.bw-card:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+
+.bw-card img,
+.bw-card .bw-placeholder {
+  display: block; width: 100%; height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+/* Book spine fold + soft sheen, sits on top of real covers too */
+.bw-card::after {
+  content: "";
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg,
+    rgba(0,0,0,.22) 0%,
+    rgba(255,255,255,.14) 2.4%,
+    rgba(0,0,0,.2) 5.2%,
+    rgba(0,0,0,0) 9%,
+    rgba(255,255,255,.05) 55%,
+    rgba(0,0,0,.05) 100%);
+}
+
+/* Placeholder cover, removed automatically once "src" is set */
+.bw-placeholder {
+  position: relative;
+  padding: 9% 9% 8% 13%;
+  display: flex; flex-direction: column; justify-content: space-between;
+  background: var(--c-bg);
+  color: var(--c-fg);
+  overflow: hidden;
+}
+.bw-placeholder svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.bw-ph-top, .bw-ph-bottom { position: relative; z-index: 1; }
+.bw-ph-top { display: flex; justify-content: space-between; font-size: .55em; }
+.bw-ph-title { display: block; font-size: 1.05em; line-height: 1.2; margin-bottom: .5em; }
+.bw-ph-author { display: block; font-size: .55em; opacity: .75; }
+
+/* ---------- Controls ---------- */
+.bw-controls {
+  position: absolute; left: 50%; bottom: clamp(12px, 2.6%, 26px);
+  transform: translateX(-50%);
+  display: flex; align-items: center; gap: 12px;
+  font-size: 12px;
+  z-index: 3000;
+}
+.bw-btn {
+  width: 40px; height: 40px;
+  display: grid; place-items: center;
+  padding: 0;
+  border: 1px solid #9c9c9c;
+  border-radius: 50%;
+  background: rgba(255,255,255,.35);
+  color: var(--ink);
+  cursor: pointer;
+  transition: background .2s, color .2s, border-color .2s;
+}
+.bw-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+.bw-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.bw-btn svg { width: 14px; height: 14px; }
+.bw-count { min-width: 62px; text-align: center; }
+
+.bw-sr {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+.bw-header h1 { margin: 0; font: inherit; letter-spacing: inherit; text-align: center; }
+@media (max-width: 640px) { .bw-header h1 { text-align: right; } }
+</style>
+
+<script>
+(function () {
+  var root = document.getElementById("bookWheel") as HTMLElement | null;
+  if (!root) return;
+  function esc(s: string) { return String(s).replace(/[&<>"']/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" } as any)[c]; }); }
+  var BOOKS: any[] = JSON.parse(root.dataset.books || "[]");
+  if (!BOOKS.length) return;
+
+  /* ==========================================================
+     2. MOTION SETTINGS
+     ========================================================== */
+  var SETTINGS = {
+    autoplayEvery: 2.8,   // seconds each book stays in the centre (0 = off)
+    stepAngle: 30,        // degrees between books on the wheel
+    stiffness: 90,        // spring speed
+    damping: 11,          // lower = more overshoot, higher = calmer
+    trail: 0.03,          // how far the outer books lag behind while turning
+    sway: 0.03,           // gentle idle drift (0 = perfectly still)
+    ringText: root.dataset.ring || "Book collection ◆ "
+  };
+
+  /* ==========================================================
+     3. ENGINE  -  no need to edit below
+     ========================================================== */
+
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var STEP = SETTINGS.stepAngle * Math.PI / 180;
+  var SVG_NS = "http://www.w3.org/2000/svg";
+  var MIN_SLOTS = 9;   // short lists are repeated so the wheel never shows a gap
+
+  var slots = [];
+  while (slots.length < MIN_SLOTS) slots = slots.concat(BOOKS);
+  var N = slots.length;
+
+  function mod(a, n) { return ((a % n) + n) % n; }
+  function wrap(d) { return mod(d + N / 2, N) - N / 2; }
+  function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+
+  /* Placeholder artwork ---------------------------------------- */
+  var LOOKS = [
+    { bg: "#101014", fg: "#f2f2f2", art: '<circle cx="100" cy="150" r="66" fill="none" stroke="#3f6df0" stroke-width="16"/><circle cx="100" cy="150" r="38" fill="none" stroke="#8aa8ff" stroke-width="8"/><circle cx="100" cy="150" r="14" fill="#f2f2f2"/>' },
+    { bg: "#e04a36", fg: "#161616", art: '<path d="M0 205 100 95l100 110z" fill="#161616"/><path d="M58 205 100 158l42 47z" fill="#e04a36"/>' },
+    { bg: "#efefef", fg: "#161616", art: '<g fill="#161616"><rect x="24" y="84" width="152" height="12"/><rect x="24" y="110" width="110" height="12"/><rect x="24" y="136" width="152" height="12"/><rect x="24" y="162" width="70" height="12"/><rect x="24" y="188" width="128" height="12"/></g>' },
+    { bg: "#e9dfca", fg: "#1c1c1c", art: '<circle cx="136" cy="118" r="50" fill="#d9842f"/><path d="M0 214c40-46 74-46 104-14s60 26 96-14v114H0z" fill="#1c1c1c"/>' },
+    { bg: "#161616", fg: "#ffffff", art: '<g fill="none" stroke="#ffffff" stroke-width="5"><path d="M0 92 200 208"/><path d="M0 122 200 238"/><path d="M0 62 200 178"/></g><circle cx="100" cy="150" r="30" fill="#e04a36"/>' },
+    { bg: "#2f4a3a", fg: "#f1ead8", art: '<g fill="#f1ead8"><circle cx="60" cy="110" r="18"/><circle cx="100" cy="110" r="18"/><circle cx="140" cy="110" r="18"/><circle cx="60" cy="150" r="18"/><circle cx="100" cy="150" r="18" fill="#d9b24c"/><circle cx="140" cy="150" r="18"/><circle cx="60" cy="190" r="18"/><circle cx="100" cy="190" r="18"/><circle cx="140" cy="190" r="18"/></g>' },
+    { bg: "#f7f7f7", fg: "#161616", art: '<path d="M100 76a74 74 0 0 1 0 148z" fill="#161616"/><path d="M100 104a46 46 0 0 0 0 92z" fill="#3f6df0"/>' },
+    { bg: "#27306b", fg: "#ffffff", art: '<g fill="none" stroke="#ffb44a" stroke-width="7"><path d="M26 210a74 74 0 0 1 148 0"/><path d="M50 210a50 50 0 0 1 100 0"/><path d="M74 210a26 26 0 0 1 52 0"/></g>' }
+  ];
+
+  function placeholder(book, i) {
+    var look = LOOKS[i % LOOKS.length];
+    return '<span class="bw-placeholder" style="--c-bg:' + look.bg + ';--c-fg:' + look.fg + '">' +
+      '<svg viewBox="0 0 200 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">' + look.art + '</svg>' +
+      '<span class="bw-ph-top"><span>Cover</span><span>' + String(i + 1).padStart(2, "0") + '</span></span>' +
+      '<span class="bw-ph-bottom"><span class="bw-ph-title">' + esc(book.title) + '</span>' +
+      '<span class="bw-ph-author">' + esc(book.author) + '</span></span></span>';
+  }
+
+  /* Dial ------------------------------------------------------- */
+  var dial = document.createElementNS(SVG_NS, "svg");
+  dial.setAttribute("class", "bw-dial");
+  dial.setAttribute("viewBox", "-500 -500 1000 1000");
+  dial.setAttribute("aria-hidden", "true");
+  var ringText = "";
+  for (var r = 0; r < 6; r++) ringText += SETTINGS.ringText;
+  dial.innerHTML =
+    '<defs><path id="bwRingPath" d="M0,-360 A360,360 0 1,1 -0.01,-360 Z"/></defs>' +
+    '<g class="bw-g-outer"><circle r="498" stroke-dasharray="15 15"/></g>' +
+    '<g class="bw-g-text"><text><textPath href="#bwRingPath" textLength="2262" lengthAdjust="spacing"></textPath></text></g>' +
+    '<g class="bw-g-inner"><circle r="290" stroke-dasharray="15 15"/></g>';
+  dial.querySelector("textPath").textContent = ringText.toUpperCase();
+  root.insertBefore(dial, root.firstChild);
+  var gOuter = dial.querySelector(".bw-g-outer");
+  var gText = dial.querySelector(".bw-g-text");
+  var gInner = dial.querySelector(".bw-g-inner");
+
+  /* Cards + labels --------------------------------------------- */
+  var cards = [], labels = [];
+  slots.forEach(function (book, i) {
+    var el = document.createElement("button");
+    el.type = "button";
+    el.className = "bw-card";
+    el.tabIndex = -1;
+    el.setAttribute("aria-label", book.title + (book.author ? " by " + book.author : ""));
+    var bookIndex = i % BOOKS.length;
+    if (book.src) {
+      var img = document.createElement("img");
+      img.src = book.src;
+      img.alt = "";
+      img.draggable = false;
+      img.loading = "eager";
+      el.appendChild(img);
+    } else {
+      el.innerHTML = placeholder(book, bookIndex);
+    }
+    el.addEventListener("click", function () { onCardClick(i); });
+    root.appendChild(el);
+    cards.push(el);
+
+    var lab = document.createElement("div");
+    lab.className = "bw-label";
+    lab.setAttribute("aria-hidden", "true");
+    lab.textContent = book.label;
+    root.appendChild(lab);
+    labels.push(lab);
+  });
+
+  var countEl = root.querySelector(".bw-count");
+  var liveEl = root.querySelector(".bw-sr");
+
+  /* Layout ----------------------------------------------------- */
+  var W = 0, H = 0, cardW = 0, cardH = 0, cx = 0, cy = 0, radius = 0, pivotY = 0, dialR = 0;
+
+  function layout() {
+    var box = root.getBoundingClientRect();
+    W = box.width; H = box.height;
+    cardW = clamp(Math.min(H / 3, W * 0.5), 120, 340);
+    cardH = cardW * 1.5;                 // book proportion 2:3
+    cx = W / 2;
+    cy = H * (W < 640 ? 0.42 : 0.46);
+    radius = cardW * 2.14;
+    pivotY = cy + radius;
+    dialR = pivotY - (cy + cardH / 2) - Math.max(20, H * 0.036);
+
+    dial.style.width = dial.style.height = dialR * 2 + "px";
+    dial.style.transform = "translate(" + (cx - dialR) + "px," + (pivotY - dialR) + "px)";
+
+    var fontPx = clamp(cardW * 0.075, 9, 22);
+    cards.forEach(function (c) {
+      c.style.width = cardW + "px";
+      c.style.height = cardH + "px";
+      c.style.fontSize = fontPx + "px";
+    });
+    render();
+  }
+
+  /* Spring state ----------------------------------------------- */
+  var pos = 0, target = 0, vel = 0;
+  var intro = reduced ? 1 : 0, introVel = 0;
+  var clock = 0, sinceMove = 0, lastT = 0;
+  var inView = false, hovering = false, focused = false, dragging = false;
+  var activeSlot = -1;
+
+  function render() {
+    var swayNow = reduced ? 0 : Math.sin(clock * 0.9) * SETTINGS.sway;
+    var p = pos + swayNow;
+    var spread = intro;
+    var lag = reduced ? 0 : SETTINGS.trail;
+
+    for (var i = 0; i < N; i++) {
+      var d0 = wrap(i - p);
+      var abs0 = Math.abs(d0);
+      var d = d0 + clamp(vel, -8, 8) * lag * abs0;
+      var ad = Math.abs(d);
+      var f = (ad * ad) / (ad + 0.5);    // smooth version of |d|
+      var a = d * STEP * spread;
+      var rr = radius * (1 - 0.07 * Math.min(f, 3.5));
+      var x = cx + Math.sin(a) * rr;
+      var y = pivotY - Math.cos(a) * rr + (1 - intro) * H * 0.45;
+      var s = (1 - 0.035 * Math.min(f, 3)) * (0.86 + 0.14 * intro);
+
+      var card = cards[i];
+      var hidden = abs0 > 3.7;
+      card.style.visibility = hidden ? "hidden" : "visible";
+      if (!hidden) {
+        card.style.transform = "translate3d(" + (x - cardW / 2).toFixed(2) + "px," + (y - cardH / 2).toFixed(2) +
+          "px,0) rotate(" + a.toFixed(4) + "rad) scale(" + s.toFixed(4) + ")";
+        card.style.zIndex = String(1000 - Math.round(abs0 * 100));
+        card.style.opacity = String(clamp(intro * 2.2, 0, 1));
+      }
+
+      var lab = labels[i];
+      var op = clamp(1 - ad * 1.4, 0, 1) * clamp(intro * 2 - 1, 0, 1);
+      lab.style.opacity = op.toFixed(3);
+      lab.style.visibility = op > 0.01 ? "visible" : "hidden";
+      if (op > 0.01) {
+        var lr = dialR - clamp(cardW * 0.1, 12, 32);
+        lab.style.transform = "translate(" + (cx + Math.sin(a) * lr).toFixed(2) + "px," +
+          (pivotY - Math.cos(a) * lr).toFixed(2) + "px) translate(-50%,0) rotate(" + a.toFixed(4) + "rad)";
+      }
+    }
+
+    var deg = -p * SETTINGS.stepAngle;
+    gOuter.setAttribute("transform", "rotate(" + deg.toFixed(3) + ")");
+    gText.setAttribute("transform", "rotate(" + deg.toFixed(3) + ")");
+    gInner.setAttribute("transform", "rotate(" + (-deg * 0.6).toFixed(3) + ")");
+  }
+
+  function updateActive() {
+    var slot = mod(Math.round(target), N);
+    if (slot === activeSlot) return;
+    hovering = false;
+    if (activeSlot >= 0) cards[activeSlot].tabIndex = -1;
+    activeSlot = slot;
+    cards[slot].tabIndex = 0;
+    var bookIndex = slot % BOOKS.length;
+    countEl.textContent = String(bookIndex + 1).padStart(2, "0") + " / " + String(BOOKS.length).padStart(2, "0");
+    liveEl.textContent = "Book " + (bookIndex + 1) + " of " + BOOKS.length + ": " + BOOKS[bookIndex].title;
+  }
+
+  function move(dir) {
+    target = Math.round(target) + dir;
+    sinceMove = 0;
+    updateActive();
+  }
+
+  function onCardClick(i) {
+    if (dragJustEnded) return;
+    if (i === activeSlot) {
+      var href = slots[i].href;
+      if (href && href.charAt(0) === "#") {
+        var t = document.querySelector(href);
+        var lenis = window.__lenis;
+        if (t && lenis) lenis.scrollTo(t, { offset: -100 });
+        else if (t) t.scrollIntoView({ behavior: "smooth" });
+      } else if (href) window.location.href = href;
+      return;
+    }
+    target = Math.round(target) + Math.round(wrap(i - target));
+    sinceMove = 0;
+    updateActive();
+  }
+
+  /* Main loop -------------------------------------------------- */
+  var running = false;
+  function tick(t) {
+    if (!running) return;
+    var dt = lastT ? Math.min((t - lastT) / 1000, 0.1) : 0.016;
+    lastT = t;
+    clock += dt;
+
+    if (!reduced) {
+      var steps = 4, h = dt / steps;     // sub-steps keep the spring stable
+      for (var s = 0; s < steps; s++) {
+        vel += (-SETTINGS.stiffness * (pos - target) - SETTINGS.damping * vel) * h;
+        pos += vel * h;
+        introVel += (-40 * (intro - 1) - 10 * introVel) * h;
+        intro += introVel * h;
+      }
+    } else {
+      pos = target; vel = 0;
+    }
+
+    if (!hovering && !focused && !dragging && SETTINGS.autoplayEvery > 0 && !reduced) {
+      sinceMove += dt;
+      if (sinceMove >= SETTINGS.autoplayEvery) move(1);
+    }
+
+    render();
+    requestAnimationFrame(tick);
+  }
+  function start() {
+    if (running) return;
+    running = true; lastT = 0;
+    requestAnimationFrame(tick);
+  }
+  function stop() { running = false; }
+
+  /* Interaction ------------------------------------------------ */
+  root.querySelectorAll(".bw-btn").forEach(function (b) {
+    b.addEventListener("click", function () { move(Number(b.dataset.dir)); });
+  });
+  /* Autoplay pauses only while the mouse rests on the centre book, because
+     a full-height section would otherwise stay paused for as long as the
+     cursor is anywhere on the page. */
+  root.addEventListener("pointerover", function (e) {
+    hovering = e.pointerType === "mouse" && e.target === cards[activeSlot];
+  });
+  root.addEventListener("pointerleave", function () { hovering = false; });
+  root.addEventListener("focusin", function (e) {
+    if (e.target.matches(":focus-visible")) focused = true;
+  });
+  root.addEventListener("focusout", function () { focused = false; });
+  root.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowRight") { e.preventDefault(); move(1); }
+    if (e.key === "ArrowLeft") { e.preventDefault(); move(-1); }
+  });
+
+  /* Drag / swipe */
+  var downX = null, downTarget = 0, pointerId = null, dragJustEnded = false, lastX = 0, lastMoveT = 0, flick = 0;
+  root.addEventListener("pointerdown", function (e) {
+    if (e.button !== 0 || e.target.closest(".bw-controls")) return;
+    downX = lastX = e.clientX;
+    downTarget = target;
+    pointerId = e.pointerId;
+    lastMoveT = e.timeStamp;
+    flick = 0;
+    dragJustEnded = false;
+  });
+  root.addEventListener("pointermove", function (e) {
+    if (downX === null || e.pointerId !== pointerId) return;
+    var dx = e.clientX - downX;
+    if (!dragging && Math.abs(dx) > 6) {
+      dragging = true;
+      root.classList.add("is-dragging");
+      root.setPointerCapture(pointerId);
+    }
+    if (dragging) {
+      target = downTarget - dx / (cardW * 1.15);
+      var ms = e.timeStamp - lastMoveT;
+      if (ms > 0) flick = (e.clientX - lastX) / ms;
+      lastX = e.clientX; lastMoveT = e.timeStamp;
+    }
+  });
+  function endDrag(e) {
+    if (downX === null || (e && e.pointerId !== pointerId)) return;
+    downX = null;
+    if (!dragging) return;
+    dragging = false;
+    root.classList.remove("is-dragging");
+    dragJustEnded = true;
+    setTimeout(function () { dragJustEnded = false; }, 0);
+    target = Math.round(target - clamp(flick * 0.35, -1, 1));
+    sinceMove = 0;
+    updateActive();
+  }
+  root.addEventListener("pointerup", endDrag);
+  root.addEventListener("pointercancel", endDrag);
+
+  /* Only animate while the section is visible */
+  new IntersectionObserver(function (entries) {
+    inView = entries[0].isIntersecting;
+    if (inView) start(); else stop();
+  }, { threshold: 0.05 }).observe(root);
+
+  new ResizeObserver(layout).observe(root);
+
+  updateActive();
+  layout();
+})();
+</script>

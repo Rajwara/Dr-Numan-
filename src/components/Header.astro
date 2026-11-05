@@ -5,8 +5,10 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 const primary = nav.filter((n) => !n.more);
 const more = nav.filter((n) => n.more);
 const moreActive = more.some((n) => isActive(n.href));
+// pages that open on a dark, full-bleed banner get a light header until scrolled
+const onDark = path === '/';
 ---
-<header class="hdr" data-hdr>
+<header class:list={['hdr', onDark && 'hdr--on-dark']} data-hdr>
   <div class="hdr__inner">
     <a href="/" class="hdr__mark" aria-label={`${site.name}, home`}>
       <span class="hdr__glyph" aria-hidden="true">N</span>
@@ -70,6 +72,18 @@ const moreActive = more.some((n) => isActive(n.href));
 <style>
   .hdr { position: fixed; inset: 0 0 auto; z-index: 50; padding: 14px var(--gutter); transition: transform .6s var(--ease); }
   .hdr.is-hidden { transform: translateY(-120%); }
+  /* over a dark banner (before scrolling) */
+  .hdr--on-dark:not(.is-scrolled) { color: #fff; }
+  .hdr--on-dark:not(.is-scrolled) .hdr__inner { margin-top: 10px; }
+  .hdr--on-dark:not(.is-scrolled) .hdr__glyph { background: #fff; color: var(--ink); }
+  .hdr--on-dark:not(.is-scrolled) .hdr__nav a, .hdr--on-dark:not(.is-scrolled) .hdr__more > button { color: rgba(255,255,255,.78); }
+  .hdr--on-dark:not(.is-scrolled) .hdr__nav a:hover, .hdr--on-dark:not(.is-scrolled) .hdr__nav a[aria-current='page'], .hdr--on-dark:not(.is-scrolled) .hdr__more > button.is-active { color: #fff; }
+  .hdr--on-dark:not(.is-scrolled) .hdr__drop a { color: var(--ink-2); }
+  .hdr--on-dark:not(.is-scrolled) .hdr__time { border-color: rgba(255,255,255,.8); }
+  .hdr--on-dark:not(.is-scrolled) .hdr__time .muted { color: rgba(255,255,255,.6); }
+  .hdr--on-dark:not(.is-scrolled) .hdr__watch { background: #fff; color: var(--ink); }
+  .hdr--on-dark:not(.is-scrolled) .hdr__watch .btn__icon { background: var(--ink); color: #fff; }
+  .hdr--on-dark:not(.is-scrolled) .hdr__menu { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.25); color: #fff; }
   .hdr__nav a:not(.hdr__drop a)::before { content: ''; position: absolute; left: 12px; right: 12px; bottom: 4px; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: right; transition: transform .5s var(--ease); }
   .hdr__nav a:not(.hdr__drop a):hover::before { transform: scaleX(1); transform-origin: left; }
   .hdr__inner {
@@ -132,7 +146,7 @@ const moreActive = more.some((n) => isActive(n.href));
 
 <script>
   const hdr = document.querySelector<HTMLElement>('[data-hdr]')!;
-  const onScroll = () => hdr.classList.toggle('is-scrolled', window.scrollY > 24);
+  const onScroll = () => hdr.classList.toggle('is-scrolled', window.scrollY > (hdr.classList.contains('hdr--on-dark') ? window.innerHeight * 0.75 : 24));
   onScroll();
   addEventListener('scroll', onScroll, { passive: true });
 
