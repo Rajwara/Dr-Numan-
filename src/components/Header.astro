@@ -6,7 +6,7 @@ const primary = nav.filter((n) => !n.more);
 const more = nav.filter((n) => n.more);
 const moreActive = more.some((n) => isActive(n.href));
 // pages that open on a dark, full-bleed banner get a light header until scrolled
-const onDark = path === '/' || path === '/insights/';
+const onDark = path === '/' || path === '/banner-test/' || path === '/insights/';
 ---
 <header class:list={['hdr', onDark && 'hdr--on-dark']} data-hdr>
   <div class="hdr__inner">
