@@ -6,6 +6,7 @@ import Media from '../components/Media.astro';
 import PostCard from '../components/PostCard.astro';
 import EpisodeCard from '../components/EpisodeCard.astro';
 import Arrow from '../components/Arrow.astro';
+import LatestInsights from '../components/LatestInsights.astro';
 import { site, postnominals, credentials, pillars, books, memorabilia, quotes, networks } from '../data/site';
 import { byDate } from '../scripts/util';
 
@@ -152,34 +153,8 @@ const isYear = (v: string) => /^\d{4}$/.test(v); // years don't count up
     </div>
   </section>
 
-  <!-- 5.0 LATEST INSIGHTS -->
-  <section class="section">
-    <div class="container">
-      <div class="section-head">
-        <div>
-          <span class="eyebrow">Writing</span>
-          <h2 class="h2" data-split>Latest <em>Insights</em></h2>
-        </div>
-        <Button href="/insights/">All insights</Button>
-      </div>
-      <div class="insights" data-stagger>
-        {posts.slice(0, 3).map((post, i) => (
-          <a class="ins-row" href={`/insights/${post.id}/`} data-cursor="Read">
-            <span class="ins-row__n">0{i + 1}</span>
-            <div>
-              <h3 class="h3">{post.data.title}</h3>
-              <p class="muted">{post.data.excerpt}</p>
-            </div>
-            <span class="ins-row__meta">
-              {post.data.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-              <br />{post.data.category}
-            </span>
-            <span class="ins-row__go"><Arrow /></span>
-          </a>
-        ))}
-      </div>
-    </div>
-  </section>
+  <!-- 5.0 LATEST INSIGHTS (design + motion from stay-on-course-section.html) -->
+  <LatestInsights posts={posts.slice(0, 3)} />
 
   <!-- 6.0 FEATURED BOOK (optional) -->
   {featuredBook && (
@@ -386,22 +361,6 @@ const isYear = (v: string) => /^\d{4}$/.test(v); // years don't count up
   .conv :global(.card) { background: var(--dark-2); border-color: rgba(255,255,255,.06); color: #eee; }
   .conv :global(.muted) { color: #9b9ba2; }
   .conv :global(.link-arrow) { color: var(--accent); }
-
-  /* ── INSIGHTS ROWS ── */
-  .insights { border-top: 1px solid var(--line); }
-  .ins-row { position: relative; display: grid; grid-template-columns: 60px 1fr 160px 48px; gap: 24px; align-items: center; padding: 32px 0; border-bottom: 1px solid var(--line); overflow: hidden; }
-  .ins-row::before { content: ''; position: absolute; inset: 0; background: var(--ink); transform: scaleY(0); transform-origin: bottom; transition: transform .6s var(--ease); z-index: -1; }
-  .ins-row { isolation: isolate; transition: color .4s, padding .6s var(--ease); }
-  .ins-row:hover { color: #fff; padding-inline: 24px; }
-  .ins-row:hover::before { transform: scaleY(1); }
-  .ins-row:hover .muted { color: #a9a9af; }
-  .ins-row p { margin: 6px 0 0; }
-  .ins-row__n { font-size: .85rem; color: var(--muted); }
-  .ins-row__meta { font-size: .85rem; color: var(--muted); }
-  .ins-row__go { width: 44px; height: 44px; border-radius: 50%; border: 1px solid currentColor; display: grid; place-items: center; transition: transform .5s var(--ease), background .3s, border-color .3s; }
-  .ins-row__go :global(svg) { width: 16px; }
-  .ins-row:hover .ins-row__go { background: var(--accent); border-color: var(--accent); transform: rotate(45deg); }
-  @media (max-width: 760px) { .ins-row { grid-template-columns: 1fr 44px; } .ins-row__n, .ins-row__meta { display: none; } }
 
   /* ── BOOK ── */
   .book { display: grid; grid-template-columns: 0.7fr 1fr; gap: clamp(32px, 6vw, 96px); align-items: center; background: var(--surface); border-radius: var(--radius-lg); padding: clamp(28px, 5vw, 72px); overflow: hidden; }

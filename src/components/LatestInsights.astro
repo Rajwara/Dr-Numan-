@@ -1,0 +1,170 @@
+---
+/**
+ * Home: Latest Insights. Design and motion from the supplied stay-on-course-section.html:
+ *  • label + large title + "All insights" link whose text rolls up on hover
+ *  • one row per post; on hover the image opens from the left, pushing the text across,
+ *    and the arrow button inverts
+ *  • rows rise into view one by one as you scroll
+ * Touch screens show the image all the time; mobile stacks the image above the text.
+ */
+import { postImage, fmtDate } from '../scripts/util';
+
+interface Props {
+  posts: { id: string; data: { title: string; excerpt: string; date: Date; category: string; image?: string; imageAlt?: string } }[];
+}
+const { posts } = Astro.props;
+---
+<section class="soc" aria-labelledby="soc-title">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="soc-arrow" viewBox="0 0 24 24"><path d="M4 12h15M13 5.5l6.5 6.5-6.5 6.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></symbol>
+  </svg>
+
+  <div class="container">
+    <div class="soc__label" data-soc-reveal="fade">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20M3.3 7l17.4 10M20.7 7 3.3 17" stroke="currentColor" stroke-width="3" stroke-linecap="round" /></svg>
+      <span>Insights</span>
+    </div>
+
+    <div class="soc__head">
+      <h2 class="soc__title" id="soc-title" data-soc-reveal="up">Latest Insights:<br /><em>cricket, history</em> &amp; medicine</h2>
+      <div data-soc-reveal="up">
+        <a class="soc__more soc__more--desktop" href="/insights/">
+          <span class="soc__more-clip">
+            <span class="soc__more-text">View all insights</span>
+            <span class="soc__more-text" aria-hidden="true">View all insights</span>
+          </span>
+        </a>
+      </div>
+    </div>
+
+    <div class="soc__list">
+      {posts.map((post) => {
+        const href = `/insights/${post.id}/`;
+        return (
+          <article class="soc__item">
+            <div class="soc__row" data-soc-reveal="up">
+              <div class="soc__left">
+                <div class="soc__media">
+                  <a href={href} tabindex="-1" aria-hidden="true">
+                    <img src={postImage(post.data)} alt="" loading="lazy" decoding="async" />
+                  </a>
+                </div>
+                <div class="soc__content">
+                  <span class="soc__cat">{post.data.category}</span>
+                  <a href={href} data-cursor="Read"><h3 class="soc__post-title">{post.data.title}</h3></a>
+                  <p class="soc__text">{post.data.excerpt}</p>
+                  <div class="soc__date">{fmtDate(post.data.date)}</div>
+                </div>
+              </div>
+              <a class="soc__arrow" href={href} aria-label={`Read: ${post.data.title}`}><svg aria-hidden="true"><use href="#soc-arrow" /></svg></a>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+
+    <a class="soc__more soc__more--mobile" href="/insights/">
+      <span class="soc__more-clip"><span class="soc__more-text">View all insights</span></span>
+    </a>
+  </div>
+</section>
+
+<style>
+  .soc {
+    --soc-muted: #8f8f96;
+    --soc-line: rgba(17, 17, 19, .16);
+    --soc-out-quart: cubic-bezier(.25, 1, .5, 1);
+    --soc-out-expo: cubic-bezier(.19, 1, .22, 1);
+    padding: clamp(56px, 8vw, 110px) 0;
+    color: var(--ink);
+  }
+  .soc img { display: block; }
+
+  /* header */
+  .soc__label { display: flex; align-items: center; gap: 8px; color: var(--soc-muted); }
+  .soc__label svg { width: 18px; height: 19px; flex: none; color: var(--accent); }
+  .soc__label span { font-size: clamp(1.4rem, 2.2vw, 2rem); line-height: 1.5; font-weight: 500; letter-spacing: -.02em; }
+  .soc__head { display: flex; justify-content: space-between; align-items: center; gap: 24px; margin-bottom: 30px; }
+  .soc__title { margin: 16px 0 0; font-size: clamp(2.3rem, 4.6vw, 3.75rem); line-height: 1.2; font-weight: 500; letter-spacing: -0.03em; }
+  .soc__title em { color: var(--accent); }
+
+  /* "View all": text rolls up on hover */
+  .soc__more { position: relative; display: inline-flex; flex: none; padding-bottom: 10px; }
+  .soc__more-clip { position: relative; display: block; height: 30px; overflow: hidden; }
+  .soc__more-text { display: block; white-space: nowrap; font-size: 1.25rem; line-height: 30px; font-weight: 500; letter-spacing: -.02em; transition: transform 500ms var(--soc-out-expo); }
+  .soc__more-text + .soc__more-text { position: absolute; top: 30px; left: 0; color: var(--accent-deep); }
+  .soc__more::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: currentColor; transform-origin: left; transition: transform 600ms var(--soc-out-expo); }
+  .soc__more:hover .soc__more-text, .soc__more:focus-visible .soc__more-text { transform: translateY(-100%); }
+  .soc__more--mobile { display: none; }
+
+  /* rows */
+  .soc__list { border-top: 1px solid var(--soc-line); }
+  .soc__item { border-bottom: 1px solid var(--soc-line); }
+  .soc__row { display: flex; justify-content: space-between; align-items: center; padding: 40px 0; }
+  .soc__left { display: flex; align-items: center; min-width: 0; }
+
+  /* image: collapsed until the row is hovered (closing runs 500ms linear) */
+  .soc__media { flex: none; width: 0; opacity: 0; transform: scale(0); transition: width 500ms linear, opacity 500ms linear, transform 500ms linear; }
+  .soc__media a { display: block; width: 300px; height: 200px; border-radius: 12px; overflow: hidden; }
+  .soc__media img { width: 100%; height: 100%; object-fit: cover; }
+
+  .soc__content { display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 620px; }
+  .soc__cat { font-size: .78rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-deep); }
+  .soc__post-title { margin: 0; font-size: clamp(1.7rem, 2.8vw, 2.5rem); line-height: 1.2; font-weight: 500; letter-spacing: -0.02em; transition: color .3s; }
+  .soc__content a:hover .soc__post-title { color: var(--accent-deep); }
+  .soc__text { margin: 0; font-size: clamp(1.05rem, 1.6vw, 1.45rem); line-height: 1.5; color: var(--ink-2); letter-spacing: -0.01em; }
+  .soc__date { font-size: 1.05rem; color: var(--soc-muted); }
+
+  /* arrow button */
+  .soc__arrow { flex: none; display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; margin-left: 24px; border-radius: 50%; background: var(--accent); color: #fff; transition: background-color 500ms linear, color 500ms linear; }
+  .soc__arrow svg { width: 20px; height: 20px; transition: transform 500ms linear; }
+  .soc__arrow:hover svg, .soc__arrow:focus-visible svg { transform: rotate(-20deg); }
+
+  /* row hover: image opens, pushing the text across, arrow inverts */
+  @media (hover: hover) {
+    .soc__row:hover .soc__media, .soc__row:focus-within .soc__media { width: 340px; opacity: 1; transform: scale(1); transition: width 600ms ease, opacity 200ms linear, transform 600ms linear; }
+    .soc__row:hover .soc__arrow, .soc__row:focus-within .soc__arrow { background: var(--ink); color: var(--accent); }
+  }
+  /* touch screens have no hover, so the image stays visible */
+  @media (hover: none) { .soc__media { width: 340px; opacity: 1; transform: none; } }
+
+  /* scroll-in reveals; .soc--js means content never hides if JS fails */
+  .soc:global(.soc--js) [data-soc-reveal] { opacity: 0; transition: opacity 1000ms var(--soc-out-quart), transform 1000ms var(--soc-out-quart); }
+  .soc:global(.soc--js) [data-soc-reveal='up'] { transform: translateY(100px); }
+  .soc:global(.soc--js) [data-soc-reveal]:global(.is-in) { opacity: 1; transform: none; }
+
+  @media (max-width: 991px) {
+    .soc__media a { width: 220px; height: 160px; }
+    .soc__row:hover .soc__media, .soc__row:focus-within .soc__media { width: 250px; }
+  }
+  @media (max-width: 991px) and (hover: none) { .soc__media { width: 250px; } }
+
+  /* mobile: stacked, image always visible */
+  @media (max-width: 767px) {
+    .soc__more--desktop, .soc__arrow { display: none; }
+    .soc__more--mobile { display: inline-flex; margin-top: 32px; }
+    .soc__row { padding: 28px 0; }
+    .soc__left { flex-direction: column; align-items: stretch; gap: 20px; width: 100%; }
+    .soc__media, .soc__row:hover .soc__media, .soc__row:focus-within .soc__media { width: 100%; opacity: 1; transform: none; transition: none; }
+    .soc__media a { width: 100%; height: auto; aspect-ratio: 3 / 2; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .soc *, .soc:global(.soc--js) [data-soc-reveal] { transition-duration: 1ms !important; }
+    .soc:global(.soc--js) [data-soc-reveal='up'] { transform: none; }
+  }
+</style>
+
+<script>
+  // Plays each reveal once, when it enters the viewport
+  const section = document.querySelector<HTMLElement>('.soc');
+  if (section && 'IntersectionObserver' in window) {
+    section.classList.add('soc--js');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
+      });
+    });
+    section.querySelectorAll('[data-soc-reveal]').forEach((el) => io.observe(el));
+  }
+</script>
