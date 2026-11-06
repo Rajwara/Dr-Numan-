@@ -2,7 +2,7 @@
  * Motion system
  * ─────────────
  *  • Lenis smooth scrolling, synced with GSAP ScrollTrigger
- *  • Preloader (first visit per session) → hero intro timeline
+ *  • Liquid text loader hand-off (first visit per session) → hero intro timeline
  *  • [data-split]          masked line-by-line headline reveals (SplitText)
  *  • .reveal               fade-up on scroll (batched)
  *  • [data-stagger]        children cascade in
@@ -29,7 +29,6 @@ const EASE = 'expo.out';
 
 function showAll() {
   root.classList.add('motion-off', 'motion-ready');
-  document.querySelector('[data-loader]')?.remove();
   window.dispatchEvent(new Event('intro:done'));
 }
 
@@ -51,35 +50,17 @@ function smoothScroll() {
   return lenis;
 }
 
-/* ───────────────────────── Preloader ───────────────────────── */
-function preloader(): Promise<void> {
-  const el = document.querySelector<HTMLElement>('[data-loader]');
-  if (!el) return Promise.resolve();
-  let seen = false;
-  try { seen = sessionStorage.getItem('nn-intro') === '1'; sessionStorage.setItem('nn-intro', '1'); } catch {}
-
+/* ───────────────────────── Loader hand-off ─────────────────────────
+   The liquid text loader (LiquidLoader.astro) fires `loader:reveal` as its word zooms
+   through; the hero intro starts then. Scrolling is paused until it does. */
+function waitForLoader(lenis: Lenis): Promise<void> {
+  const w = window as unknown as { __loaderRevealed?: boolean };
+  if (w.__loaderRevealed || !document.getElementById('loader')) return Promise.resolve();
+  lenis.stop();
   return new Promise((resolve) => {
-    const count = el.querySelector<HTMLElement>('[data-loader-count]')!;
-    const bar = el.querySelector<HTMLElement>('[data-loader-bar]')!;
-    const words = el.querySelectorAll<HTMLElement>('[data-loader-word]');
-    const tl = gsap.timeline({ onComplete: () => { el.remove(); resolve(); } });
-
-    if (seen) {
-      // returning visitor: quick curtain only
-      el.querySelector('.loader__inner')?.remove();
-      tl.to(el, { yPercent: -100, duration: 0.9, ease: 'expo.inOut', delay: 0.05 });
-      tl.call(resolve, [], 0.45);
-      return;
-    }
-    const n = { v: 0 };
-    tl.from(words, { yPercent: 110, duration: 1, stagger: 0.08, ease: EASE })
-      .to(n, {
-        v: 100, duration: 1.6, ease: 'power3.inOut',
-        onUpdate: () => { count.textContent = String(Math.round(n.v)).padStart(3, '0'); bar.style.transform = `scaleX(${n.v / 100})`; },
-      }, 0.1)
-      .to(words, { yPercent: -110, duration: 0.7, stagger: 0.05, ease: 'expo.in' }, '+=0.1')
-      .to(el, { clipPath: 'inset(0 0 100% 0)', duration: 1.1, ease: 'expo.inOut' }, '-=0.25');
-    tl.call(resolve, [], '-=0.55'); // start hero while curtain lifts
+    const go = () => { lenis.start(); resolve(); };
+    window.addEventListener('loader:reveal', go, { once: true });
+    setTimeout(go, 12000); // never wait forever
   });
 }
 
@@ -240,9 +221,9 @@ function pointer() {
 async function boot() {
   if (reduced) return showAll();
   root.classList.add('motion-on', 'motion-ready');
-  smoothScroll();
+  const lenis = smoothScroll();
   await document.fonts.ready;
-  await preloader();
+  await waitForLoader(lenis);
   window.dispatchEvent(new Event('intro:done'));
   heroIntro();
   scrollEffects();

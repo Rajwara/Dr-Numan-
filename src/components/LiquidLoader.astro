@@ -1,0 +1,214 @@
+---
+/**
+ * Page loader: the word fills with liquid from 0 to 100 %, then zooms through to reveal the page.
+ * Adapted from the supplied liquid-text-loader.html.
+ *  • Plays on the first page of a visit (per browser tab session); later pages skip it.
+ *  • Waits at 90 % until the page has really loaded.
+ *  • Fires `loader:reveal` on window as the zoom starts, so the hero intro can play underneath,
+ *    and sets window.__loaderDone when finished.
+ */
+---
+<div id="loader" role="progressbar" aria-label="Loading" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+  <svg aria-hidden="true">
+    <defs><clipPath id="loader-clip"><text class="word"></text></clipPath></defs>
+    <g class="stage">
+      <g class="word-group">
+        <text class="word word-empty"></text>
+        <g clip-path="url(#loader-clip)"><path class="wave"></path></g>
+      </g>
+      <text class="status"></text>
+    </g>
+  </svg>
+</div>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet" />
+
+<style is:global>
+  html.is-loading { overflow: hidden; }
+  html.loader-skip #loader, html.no-js #loader { display: none; }
+
+  #loader {
+    --loader-bg: #120f0c;       /* site dark */
+    --loader-empty: #3a332d;    /* warm charcoal */
+    --loader-fill: #e8711c;     /* site accent */
+    --loader-status: #c9c3bd;
+    --loader-font: "Archivo Black";
+    position: fixed; inset: 0; z-index: 9999;
+    background: var(--loader-bg);
+    transition: opacity .5s ease;
+  }
+  #loader.is-done { opacity: 0; pointer-events: none; }
+  #loader svg { display: block; width: 100%; height: 100%; opacity: 0; transition: opacity .25s; }
+  #loader.is-ready svg { opacity: 1; }
+  #loader .word { font-family: var(--loader-font), "Arial Black", Impact, sans-serif; font-weight: 400; letter-spacing: -.02em; }
+  #loader .word-empty { fill: var(--loader-empty); }
+  #loader .wave { fill: var(--loader-fill); }
+  #loader .status { fill: var(--loader-status); font: 500 11px/1 "Inter Tight", system-ui, sans-serif; text-anchor: end; white-space: pre; }
+</style>
+
+<script>
+  const CONFIG = {
+    text: 'NIAZ',         // the word that fills up
+    minDuration: 3200,    // shortest time from 0 to 100, in ms
+    stallAt: 90,          // waits here until the page has really loaded
+    hold: 350,            // pause at 100 before the zoom, in ms
+    exitDuration: 1450,   // zoom-through length, in ms
+    waveHeight: 0.13,     // wave size, relative to the letter height
+    wavesAcross: 3.2,     // roughly how many waves fit across the word
+  };
+
+  const html = document.documentElement;
+  const root = document.getElementById('loader');
+  const w = window as unknown as { __loaderDone?: boolean };
+
+  const reveal = () => { (w as { __loaderRevealed?: boolean }).__loaderRevealed = true; window.dispatchEvent(new Event('loader:reveal')); };
+  const done = () => { w.__loaderDone = true; window.dispatchEvent(new Event('loader:done')); };
+
+  if (!root || html.classList.contains('loader-skip')) {
+    root?.remove();
+    html.classList.remove('is-loading');
+    reveal();
+    done();
+  } else {
+    try { sessionStorage.setItem('nn-intro', '1'); } catch {}
+    run(root);
+  }
+
+  function run(root: HTMLElement) {
+    const svg = root.querySelector('svg')!;
+    const stage = root.querySelector('.stage')!;
+    const words = root.querySelectorAll<SVGTextElement>('.word');
+    const wave = root.querySelector('.wave')!;
+    const status = root.querySelector<SVGTextElement>('.status')!;
+    const measure = document.createElement('canvas').getContext('2d')!;
+    const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let box = { left: 0, width: 0, cx: 0, cy: 0, top: 0, bottom: 0, inkHeight: 0 };
+    let pageLoaded = document.readyState === 'complete';
+    let frame = 0, startedAt = 0, holdAt = 0, exitAt = 0, lastTime = 0;
+    let shown = 0, lastReported = -1, phase = 'idle', revealed = false;
+
+    addEventListener('load', () => { pageLoaded = true; });
+
+    const clamp = (v: number, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+    const smooth = (t: number) => { t = clamp(t); return t * t * (3 - 2 * t); };
+    const smoother = (t: number) => { t = clamp(t); return t * t * t * (t * (t * 6 - 15) + 10); };
+
+    function layout() {
+      const vw = innerWidth, vh = innerHeight;
+      svg.setAttribute('viewBox', `0 0 ${vw} ${vh}`);
+      // If the web font is unavailable, use the heaviest weight of the fallback.
+      const name = getComputedStyle(root).getPropertyValue('--loader-font').replace(/["']/g, '').trim();
+      const hasFont = document.fonts && [...document.fonts].some((f) => f.family.replace(/["']/g, '') === name && f.status === 'loaded');
+      const weight = hasFont ? 400 : 900;
+      words.forEach((t) => { t.style.fontWeight = String(weight); });
+      // Measure at a known size, then scale to the target width.
+      const family = getComputedStyle(words[0]).fontFamily;
+      measure.font = `${weight} 200px ${family}`;
+      const ink = measure.measureText(CONFIG.text);
+      const spacing = -0.02 * 200 * (CONFIG.text.length - 1);
+      const widthAt200 = ink.width + spacing;
+      const target = vw * (vw < 700 ? 0.84 : 0.58);
+      const size = Math.min((200 * target) / widthAt200, vh * 0.32);
+      const k = size / 200;
+      const width = widthAt200 * k;
+      const ascent = ink.actualBoundingBoxAscent * k;
+      const descent = ink.actualBoundingBoxDescent * k;
+      const left = (vw - width) / 2;
+      const baseline = vh / 2 + (ascent - descent) / 2;
+      words.forEach((t) => {
+        t.textContent = CONFIG.text;
+        t.setAttribute('font-size', String(size));
+        t.setAttribute('x', String(left));
+        t.setAttribute('y', String(baseline));
+      });
+      const statusSize = Math.max(11, width * 0.018);
+      status.style.fontSize = statusSize + 'px';
+      status.setAttribute('x', String(left + width));
+      status.setAttribute('y', String(baseline + descent + statusSize * 1.5));
+      box = { left, width, cx: vw / 2, cy: vh / 2, top: baseline - ascent, bottom: baseline + descent, inkHeight: ascent + descent };
+    }
+
+    function drawWave(progress: number, time: number) {
+      const { left, width, top, bottom, inkHeight } = box;
+      const amp = calm ? 0 : inkHeight * CONFIG.waveHeight;
+      const reach = amp * 1.6; // fully hidden at 0, fully covered at 100
+      const level = bottom + reach + (top - bottom - reach * 2) * progress;
+      const k = (Math.PI * 2 * CONFIG.wavesAcross) / width;
+      const t = time / 1000;
+      const step = Math.max(3, width / 180);
+      const x0 = left - step, x1 = left + width + step;
+      let d = `M${x0} ${bottom + reach * 2}`;
+      for (let x = x0; x <= x1 + step; x += step) {
+        const y = level + amp * 0.68 * Math.sin(k * (x - left) + t * 2.1) + amp * 0.32 * Math.sin(k * 1.9 * (x - left) - t * 2.9 + 1.4);
+        d += `L${x.toFixed(1)} ${y.toFixed(1)}`;
+      }
+      wave.setAttribute('d', d + `L${x1 + step} ${bottom + reach * 2}Z`);
+    }
+
+    function report(value: number) {
+      const n = Math.round(value);
+      if (n === lastReported) return;
+      lastReported = n;
+      status.textContent = `loading...  ${n} %`;
+      root.setAttribute('aria-valuenow', String(n));
+    }
+
+    function tick(now: number) {
+      const dt = Math.min(now - lastTime, 100);
+      lastTime = now;
+      if (phase === 'fill') {
+        const timed = clamp((now - startedAt) / CONFIG.minDuration) * 100;
+        const target = Math.min(timed, pageLoaded ? 100 : CONFIG.stallAt);
+        shown += (target - shown) * (1 - Math.exp(-dt / 90));
+        if (target === 100 && shown > 99.6) { shown = 100; phase = 'hold'; holdAt = now; }
+      } else if (phase === 'hold') {
+        status.style.opacity = String(1 - clamp((now - holdAt) / 250));
+        if (now - holdAt >= CONFIG.hold) { phase = 'exit'; exitAt = now; }
+      } else if (phase === 'exit') {
+        const u = clamp((now - exitAt) / CONFIG.exitDuration);
+        const scale = calm ? 1 : 1 + 0.13 * smooth(u / 0.34) + 3.2 * smoother((u - 0.25) / 0.75);
+        stage.setAttribute('transform', `translate(${box.cx} ${box.cy}) scale(${scale}) translate(${-box.cx} ${-box.cy})`);
+        stage.setAttribute('opacity', String(1 - smooth((u - 0.35) / 0.6)));
+        // let the page's own intro start while the word zooms through
+        if (!revealed && u > 0.4) { revealed = true; html.classList.remove('is-loading'); reveal(); }
+        if (u === 1) { finish(); return; }
+      }
+      report(shown);
+      drawWave(shown / 100, now);
+      frame = requestAnimationFrame(tick);
+    }
+
+    function finish() {
+      phase = 'done';
+      root.classList.add('is-done');
+      html.classList.remove('is-loading');
+      root.setAttribute('aria-hidden', 'true');
+      if (!revealed) { revealed = true; reveal(); }
+      done();
+      setTimeout(() => root.remove(), 550);
+    }
+
+    function start() {
+      cancelAnimationFrame(frame);
+      html.classList.add('is-loading');
+      phase = 'fill';
+      layout();
+      root.classList.add('is-ready');
+      startedAt = lastTime = performance.now();
+      frame = requestAnimationFrame(tick);
+    }
+
+    // Wait for the display font, but never let a slow font block the loader.
+    const family = getComputedStyle(root).getPropertyValue('--loader-font').trim();
+    const fontReady = document.fonts?.load
+      ? Promise.race([document.fonts.load(`400 100px ${family}`, CONFIG.text), new Promise((r) => setTimeout(r, 1200))]).catch(() => {})
+      : Promise.resolve();
+    fontReady.then(start);
+
+    const relayout = () => { if (phase !== 'done' && phase !== 'idle') layout(); };
+    addEventListener('resize', relayout);
+    document.fonts?.addEventListener?.('loadingdone', relayout);
+  }
+</script>
