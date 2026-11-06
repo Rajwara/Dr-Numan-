@@ -25,9 +25,11 @@ const isYear = (v: string) => /^\d{4}$/.test(v); // years don't count up
 interface Banner { desktop: { file: string; w: number }[]; mobile: { file: string; w: number }[]; ratio: [number, number] }
 interface Props { banner?: Banner; noindex?: boolean }
 const DEFAULT_BANNER: Banner = {
-  desktop: [{ file: '/images/hero-desktop-1200', w: 1200 }, { file: '/images/hero-desktop-1672', w: 1672 }],
-  mobile: [{ file: '/images/hero-mobile-640', w: 640 }, { file: '/images/hero-mobile-941', w: 941 }],
-  ratio: [1672, 941],
+  // v2 banner (current). The previous banner files (hero-desktop-*, hero-mobile-*) are kept:
+  // to switch back, use desktop 1200/1672, mobile 640/941 and ratio [1672, 941].
+  desktop: [{ file: '/images/hero-v2-desktop-1200', w: 1200 }, { file: '/images/hero-v2-desktop-1920', w: 1920 }],
+  mobile: [{ file: '/images/hero-v2-mobile-640', w: 640 }, { file: '/images/hero-v2-mobile-1080', w: 1080 }],
+  ratio: [1920, 1080],
 };
 const { banner = DEFAULT_BANNER, noindex = false } = Astro.props;
 const set = (list: { file: string; w: number }[], ext: string) => list.map((i) => `${i.file}.${ext} ${i.w}w`).join(', ');
