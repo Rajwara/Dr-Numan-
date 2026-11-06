@@ -14,7 +14,7 @@ const episodes = (await getCollection('conversations')).sort(byDate);
 const posts = (await getCollection('insights')).sort(byDate);
 const latestEp = episodes[0];
 const featuredBook = books.find((b) => b.featured);
-const word = site.shortName.toUpperCase().split('');
+const word = 'NAUMAN'.split(''); // large background word behind the banner photo
 const isYear = (v: string) => /^\d{4}$/.test(v); // years don't count up
 
 /**
@@ -250,7 +250,7 @@ const largest = banner.desktop[banner.desktop.length - 1];
   }
   .hero__word {
     position: absolute; left: 0; right: 0; bottom: -2%; z-index: 2; display: flex; justify-content: center; overflow: hidden; pointer-events: none;
-    font-size: clamp(8rem, 30vw, 30rem); font-weight: 500; letter-spacing: -0.06em; line-height: 0.82;
+    font-size: clamp(5.5rem, 19.5vw, 20rem); font-weight: 500; letter-spacing: -0.06em; line-height: 0.82;
   }
   .hero__word span {
     display: inline-block;
@@ -338,7 +338,7 @@ const largest = banner.desktop[banner.desktop.length - 1];
     .hero__title { font-size: clamp(2.9rem, 12vw, 5.6rem); }
     .hero__desc { font-size: 1rem; }
     .hero__right { display: none; }
-    .hero__word { bottom: auto; top: 33%; font-size: 36vw; z-index: 1; }
+    .hero__word { bottom: auto; top: 33%; font-size: 23vw; z-index: 1; }
     .hero__word span { background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,0) 80%); -webkit-background-clip: text; background-clip: text; }
   }
   /* upright tablets: a little more air */
