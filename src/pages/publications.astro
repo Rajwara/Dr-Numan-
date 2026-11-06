@@ -1,9 +1,15 @@
 ---
 import Base from '../layouts/Base.astro';
 import BookWheel from '../components/BookWheel.astro';
-import Media from '../components/Media.astro';
 import Button from '../components/Button.astro';
 import { books, articles, credentials, papers } from '../data/site';
+// Typographic stand-in covers (used until a real cover image is set in site.ts)
+const COVER_LOOKS = [
+  { bg: '#1a1512', fg: '#f3ede7', ac: '#e8711c', backdrop: 'linear-gradient(160deg,#3a332d,#120f0c)' },
+  { bg: '#e8711c', fg: '#120f0c', ac: '#120f0c', backdrop: 'linear-gradient(160deg,#f1d9c4,#d9b896)' },
+  { bg: '#f3ede7', fg: '#1a1512', ac: '#b4581a', backdrop: 'linear-gradient(160deg,#a8957f,#5c4f43)' },
+  { bg: '#3a332d', fg: '#f3ede7', ac: '#ffb066', backdrop: 'linear-gradient(160deg,#e7e7e9,#c9c9cd)' },
+];
 const bookCount = credentials.find((c) => c.label === 'Books published')?.value ?? String(books.length);
 const outlets = [...new Set(articles.map((a) => a.outlet))].sort();
 const topics = ['Cricket', 'History', 'Medicine'];
@@ -14,28 +20,52 @@ const sorted = [...articles].sort((a, b) => b.date.localeCompare(a.date));
   <!-- 1.0 PAGE HEADER: book wheel banner (title + summary below it) -->
   <BookWheel />
 
-  <!-- 2.0 BOOKS -->
-  <section class="section">
+  <!-- 2.0 BOOKS: card grid (layout from the supplied books-section.html) -->
+  <section class="bks">
     <div class="container">
-      <div class="section-head">
-        <div><span class="eyebrow">Books</span><h2 class="h2" data-split>The <em>books</em></h2></div>
-        <p class="lede reveal" style="margin:0;max-width:34ch">Author of {bookCount} books on cricket, its history and medicine.</p>
-      </div>
-      <div class="books">
-        {books.map((b, i) => (
-          <article class="bk reveal" id={`book-${i + 1}`}>
-            <div class="bk__cover" data-tilt><Media src={b.cover} alt={`Cover of ${b.title}`} label="Book cover" ratio="2 / 3" dark /></div>
-            <div class="bk__body">
-              <span class="muted">{[b.publisher, b.year].filter(Boolean).join(' · ')}</span>
-              <h3 class="h2">{b.title}</h3>
-              <p class="lede">{b.synopsis}</p>
-              <div class="btn-row">
-                {b.buy.map((l, i) => <Button href={l.url} variant={i === 0 ? 'dark' : 'ghost'} size="sm" external>Buy · {l.label}</Button>)}
-                {b.excerpt && <a class="link-arrow" href={b.excerpt}>Read an excerpt</a>}
+      <header class="bks__header">
+        <div>
+          <h2 class="bks__title" data-split>The books</h2>
+          <p class="bks__intro reveal">Author of {bookCount} books on cricket, its history and medicine, from the PCB-commissioned history <em>The Fluctuating Fortunes</em> to <em>The Cricket Conversations</em>.</p>
+        </div>
+        <a class="bks__btn bks__btn--solid" href="/contact/?type=publishing">Publishing enquiries</a>
+      </header>
+
+      <div class="bks__grid" data-stagger>
+        {books.map((b, i) => {
+          const look = COVER_LOOKS[i % COVER_LOOKS.length];
+          const buy = b.buy[0];
+          return (
+            <article class="bk" id={`book-${i + 1}`}>
+              <div class="bk__media" style={`--bk-bg:${look.backdrop}`}>
+                {b.cover ? (
+                  <img class="bk__cover" src={b.cover} alt={`Cover of ${b.title}`} loading="lazy" decoding="async" />
+                ) : (
+                  <div class="bk__cover bk__cover--ph" style={`--c-bg:${look.bg};--c-fg:${look.fg};--c-ac:${look.ac}`} role="img" aria-label={`${b.title} (cover image to come)`}>
+                    <span class="bk__ph-top"><span>{b.year}</span><span>{String(i + 1).padStart(2, '0')}</span></span>
+                    <span class="bk__ph-rule" aria-hidden="true"></span>
+                    <span class="bk__ph-title">{b.title}</span>
+                    <span class="bk__ph-author">Dr. Nauman Niaz</span>
+                  </div>
+                )}
               </div>
-            </div>
-          </article>
-        ))}
+              <div class="bk__meta">
+                <span>Published: <strong>{b.year}</strong></span>
+                {b.publisher && <span class="bk__divider" aria-hidden="true"></span>}
+                {b.publisher && <span class="bk__pub">{b.publisher}</span>}
+              </div>
+              <h3 class="bk__title">{b.title}</h3>
+              <p class="bk__desc">{b.synopsis}</p>
+              <div class="bk__actions">
+                {buy
+                  ? <a class="bks__btn bks__btn--solid" href={buy.url} target="_blank" rel="noopener noreferrer">Buy book<span class="sr-only"> (opens in a new tab)</span></a>
+                  : <a class="bks__btn bks__btn--solid" href="/contact/?type=publishing">Ask about this book</a>}
+                {b.buy.slice(1).map((l) => <a class="bks__btn bks__btn--text" href={l.url} target="_blank" rel="noopener noreferrer">{l.label}</a>)}
+                {b.excerpt && <a class="bks__btn bks__btn--text" href={b.excerpt}>Read an excerpt</a>}
+              </div>
+            </article>
+          );
+        })}
       </div>
     </div>
   </section>
@@ -89,16 +119,56 @@ const sorted = [...articles].sort((a, b) => b.date.localeCompare(a.date));
       </div>
     </div>
   </section>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet" />
 </Base>
 
 <style>
-  .books { display: grid; gap: 24px; }
-  .bk { scroll-margin-top: 110px; }
-  .bk { display: grid; grid-template-columns: 220px 1fr; gap: clamp(24px, 5vw, 72px); align-items: center; padding: clamp(24px, 3vw, 40px); background: var(--surface); border-radius: var(--radius-lg); }
-  .bk__cover :global(.media) { border-radius: 8px; box-shadow: 20px 30px 50px -28px rgba(0,0,0,.55); }
-  .bk__body { display: grid; gap: 16px; }
-  .bk__body .lede { margin: 0; }
-  @media (max-width: 680px) { .bk { grid-template-columns: 1fr; } .bk__cover { max-width: 180px; } }
+  /* ── Books grid ── */
+  .bks { padding-block: clamp(64px, 8vw, 110px); }
+  .bks__header { display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; margin-bottom: clamp(40px, 5vw, 70px); }
+  .bks__title { margin: 0 0 16px; font: 400 clamp(2.8rem, 6vw, 4.7rem)/1 'Anton', Impact, sans-serif; letter-spacing: .01em; text-transform: uppercase; }
+  .bks__intro { margin: 0; max-width: 620px; font-size: clamp(1.02rem, 1.4vw, 1.2rem); line-height: 1.45; color: var(--ink-2); }
+  .bks__intro em { font-family: var(--serif); font-size: 1.08em; }
+
+  .bks__btn { display: inline-flex; align-items: center; flex-shrink: 0; padding: 14px 24px; border-radius: 999px; font-size: 1rem; font-weight: 500; line-height: 1.2; white-space: nowrap; color: var(--ink); transition: transform .3s, background-color .3s, color .3s; }
+  .bks__btn--solid { background: var(--accent); border: 1px solid var(--ink); }
+  .bks__btn--solid:hover { background: var(--ink); color: var(--accent); }
+  .bks__btn--text:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+  .bks__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 56px 16px; }
+  .bk { display: flex; flex-direction: column; scroll-margin-top: 110px; }
+  .bk__media {
+    aspect-ratio: 416 / 443; margin-bottom: 30px; overflow: hidden; border-radius: 24px;
+    background: var(--bk-bg); display: grid; place-items: center; position: relative;
+  }
+  .bk__media::after { content: ''; position: absolute; inset: auto 15% 6% 15%; height: 10%; background: radial-gradient(closest-side, rgba(0,0,0,.35), transparent); filter: blur(6px); }
+  .bk__cover { position: relative; z-index: 1; height: 78%; aspect-ratio: 2 / 3; width: auto; object-fit: cover; border-radius: 4px 8px 8px 4px; box-shadow: 18px 26px 40px -18px rgba(0,0,0,.55); transition: transform .6s var(--ease); }
+  .bk:hover .bk__cover { transform: translateY(-8px) rotate(-1.5deg) scale(1.03); }
+  .bk__cover::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 7%; background: linear-gradient(90deg, rgba(0,0,0,.28), rgba(255,255,255,.12) 40%, rgba(0,0,0,.12)); border-radius: 4px 0 0 4px; }
+
+  /* typographic stand-in cover */
+  .bk__cover--ph { background: var(--c-bg); color: var(--c-fg); padding: 10% 9% 9% 14%; display: flex; flex-direction: column; overflow: hidden; container-type: inline-size; }
+  .bk__ph-top { display: flex; justify-content: space-between; font-size: 7cqw; letter-spacing: .08em; opacity: .75; }
+  .bk__ph-rule { width: 28%; height: 3px; background: var(--c-ac); margin: 14cqw 0 6cqw; }
+  .bk__ph-title { font-family: var(--serif); font-size: 15.5cqw; line-height: 1.05; letter-spacing: -0.01em; }
+  .bk__ph-author { margin-top: auto; font-size: 6.4cqw; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-ac); }
+
+  .bk__meta { display: flex; align-items: center; flex-wrap: wrap; row-gap: 4px; color: var(--muted); font-size: .98rem; }
+  .bk__meta strong { color: var(--ink); font-weight: 500; }
+  .bk__pub { color: var(--ink-2); }
+  .bk__divider { width: 2px; height: 16px; margin: 0 22px; background: var(--ink); }
+  .bk__title { margin: 10px 0 12px; font-size: clamp(1.5rem, 2.3vw, 2.1rem); font-weight: 500; line-height: 1.1; letter-spacing: -0.03em; }
+  .bk__desc { margin: 0 0 28px; color: var(--ink-2); font-size: 1.02rem; line-height: 1.5; }
+  .bk__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: auto; }
+
+  @media (max-width: 991px) { .bks__grid { grid-template-columns: repeat(2, 1fr); gap: 44px 16px; } }
+  @media (max-width: 640px) {
+    .bks__header { flex-direction: column; align-items: flex-start; }
+    .bks__grid { grid-template-columns: 1fr; }
+    .bk__media { margin-bottom: 22px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .bk__cover, .bks__btn { transition: none; } }
 
   .art-filters { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; margin-bottom: 28px; }
   .art-filters .chip { color: #ddd; border-color: rgba(255,255,255,.2); }
