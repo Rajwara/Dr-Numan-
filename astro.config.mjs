@@ -6,5 +6,5 @@ import sitemap from '@astrojs/sitemap';
 // TODO: set to the final production domain before launch.
 export default defineConfig({
   site: 'https://www.drnaumanniaz.com',
-  integrations: [mdx(), sitemap({ filter: (page) => !page.includes('/home-v2') })],
+  integrations: [mdx(), sitemap()],
 });
