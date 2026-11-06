@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import PageHeader from '../../components/PageHeader.astro';
+import PodcastHero from '../../components/PodcastHero.astro';
 import EpisodeCard from '../../components/EpisodeCard.astro';
 import YouTube from '../../components/YouTube.astro';
 import Button from '../../components/Button.astro';
@@ -16,13 +16,8 @@ const series = [...new Set(eps.map((e) => e.data.series))];
 const SERIES_TITLE = 'Conversations';
 ---
 <Base title={SERIES_TITLE} description="Conversations with cricketers and friends of the game, hosted by Dr. Nauman Niaz. Watch on YouTube or listen as a podcast.">
-  <PageHeader eyebrow="Podcast & vlog" title={SERIES_TITLE} summary="Long-form conversations with cricketers and friends of the game." image={defaultImages.podcastCover} imageAlt="A vintage studio microphone and a cricket ball">
-    <div class="btn-row">
-      {subscribeLinks.map((s, i) => (
-        <Button href={s.url} variant={i === 0 ? 'dark' : 'ghost'} size="sm" external>{s.label}</Button>
-      ))}
-    </div>
-  </PageHeader>
+  <!-- 1.0 LISTING HEADER: hanging-cards banner (series title, description, subscribe links) -->
+  <PodcastHero title={SERIES_TITLE} />
 
   {latest && (
     <section class="section--dark feat-ep">

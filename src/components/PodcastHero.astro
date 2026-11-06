@@ -1,0 +1,260 @@
+---
+/**
+ * Conversations page banner.
+ * Adapted from the supplied podcast-hero.html: episode cards hang from a string,
+ * drift slowly, swing when dragged, and settle. Cards come from /content/conversations
+ * (newest first) and link to each episode page. Subscribe links come from site.ts.
+ */
+import { getCollection } from 'astro:content';
+import Button from './Button.astro';
+import { subscribeLinks, defaultImages } from '../data/site';
+import { byDate } from '../scripts/util';
+
+interface Props { title: string }
+const { title } = Astro.props;
+
+const eps = (await getCollection('conversations')).sort(byDate);
+const total = eps.length;
+const cards = eps.map((ep, i) => {
+  const d = ep.data;
+  return {
+    href: `/conversations/${ep.id}/`,
+    img: d.thumbnail || (d.youtubeId ? `https://i.ytimg.com/vi/${d.youtubeId}/hqdefault.jpg` : defaultImages.episode),
+    guest: d.guest,
+    title: d.title,
+    meta: `Ep. ${String(total - i).padStart(2, '0')} · ${d.duration}`,
+    format: d.format,
+  };
+});
+const latest = eps[0];
+---
+<section class="pod" aria-labelledby="pod-title">
+  <div class="pod__intro">
+    <div class="pod__badge"><i class="pod__dot" aria-hidden="true"></i> Podcast &amp; vlog · {total} {total === 1 ? 'episode' : 'episodes'}</div>
+    <h1 id="pod-title" class="pod__h1">{title}<span class="sr-only">: </span><br /><span class="pod__accent">from the game</span></h1>
+    <p class="pod__sub">Long-form conversations with cricketers and friends of the game, hosted by Dr. Nauman Niaz.</p>
+    {latest && <Button href={`/conversations/${latest.id}/`}>{latest.data.format === 'Video' ? 'Watch the latest' : 'Listen to the latest'}</Button>}
+  </div>
+
+  <div class="pod__stage" data-pod-stage data-cursor="Drag">
+    <svg class="pod__string" aria-hidden="true"><path data-pod-path /></svg>
+
+    {cards.map((c) => (
+      <a class="pod__ep" href={c.href} draggable="false">
+        <i class="pod__clip" aria-hidden="true"></i>
+        <div class="pod__card">
+          <div class="pod__media">
+            <img src={c.img} alt="" draggable="false" loading="lazy" decoding="async" />
+            <span class="pod__fmt">{c.format}</span>
+            <i class="pod__play" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 3.5v17a1 1 0 0 0 1.5.86l14-8.5a1 1 0 0 0 0-1.72l-14-8.5A1 1 0 0 0 6 3.5z" /></svg></i>
+          </div>
+          <span class="pod__guest">{c.guest}</span>
+          <span class="pod__title">{c.title}</span>
+          <span class="pod__meta">{c.meta}</span>
+        </div>
+      </a>
+    ))}
+  </div>
+
+  <div class="pod__platforms" aria-label="Subscribe">
+    <span class="pod__on">Subscribe on</span>
+    {subscribeLinks.map((s) => (
+      <a href={s.url} target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="currentColor" opacity=".14" /><path d="M10 8.5v7l5.5-3.5z" fill="currentColor" /></svg>
+        {s.label}<span class="sr-only"> (opens in a new tab)</span>
+      </a>
+    ))}
+  </div>
+</section>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet" />
+
+<style>
+  .pod {
+    --card-w: clamp(170px, 18vw, 224px);
+    position: relative; overflow: hidden; padding: clamp(116px, 13vw, 150px) 0 32px;
+    background:
+      radial-gradient(60% 34% at 26% 100%, rgba(232, 113, 28, .16) 0%, rgba(232, 113, 28, 0) 100%),
+      radial-gradient(50% 34% at 90% 100%, rgba(180, 88, 26, .12) 0%, rgba(180, 88, 26, 0) 100%),
+      radial-gradient(70% 50% at 50% 0%, #f4f4f6 0%, rgba(244, 244, 246, 0) 100%),
+      var(--bg);
+  }
+
+  /* heading */
+  .pod__intro { position: relative; z-index: 2; padding: 0 var(--gutter); text-align: center; display: grid; justify-items: center; }
+  .pod__badge { display: inline-flex; align-items: center; gap: 8px; padding: 7px 18px; border: 1px solid var(--line); border-radius: 999px; background: #fff; font-size: .88rem; font-weight: 500; }
+  .pod__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(232, 113, 28, .18); animation: pod-pulse 2.4s ease-in-out infinite; }
+  @keyframes pod-pulse { 50% { box-shadow: 0 0 0 7px rgba(232, 113, 28, .06); } }
+  .pod__h1 {
+    margin-top: 20px; font-family: 'Anton', Impact, sans-serif; font-weight: 400; letter-spacing: .01em;
+    font-size: clamp(2.7rem, 7vw, 5.6rem); line-height: 1.08; text-transform: uppercase;
+  }
+  .pod__accent { color: var(--accent); }
+  .pod__sub { margin: 16px 0 24px; max-width: 46ch; font-size: clamp(1rem, 1.5vw, 1.18rem); font-weight: 500; color: var(--ink-2); }
+
+  /* hanging cards */
+  .pod__stage { position: relative; height: 400px; overflow: hidden; overflow: clip; cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+  .pod__stage.is-dragging { cursor: grabbing; }
+  :global(.has-cursor) .pod__stage { cursor: none; }
+  .pod__string { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .pod__string path { fill: none; stroke: #bdbdc2; stroke-width: 1.5; }
+
+  .pod__ep { position: absolute; top: 0; left: 0; display: block; width: var(--card-w); transform-origin: 50% 0; will-change: transform; }
+  .pod__clip { position: absolute; top: -17px; left: 50%; z-index: 2; width: 22px; height: 32px; margin-left: -11px; border-radius: 3px; background: var(--accent); box-shadow: 0 1px 3px rgba(0,0,0,.25); }
+  .pod__clip::after { content: ''; position: absolute; top: 6px; left: 50%; width: 8px; height: 8px; margin-left: -4px; border-radius: 50%; background: #fff; }
+  .pod__card { padding: 9px 9px 16px; border: 1.5px solid #dcdcdf; border-radius: 20px; background: #fff; box-shadow: 0 22px 40px rgba(30, 24, 18, .13); transition: transform .25s, box-shadow .25s; }
+  .pod__ep:hover .pod__card, .pod__ep:focus-visible .pod__card { transform: translateY(5px) scale(1.03); box-shadow: 0 28px 48px rgba(30, 24, 18, .22); }
+  .pod__ep:focus-visible { outline: none; }
+  .pod__ep:focus-visible .pod__card { border-color: var(--accent); }
+  .pod__media { position: relative; aspect-ratio: 1 / .78; overflow: hidden; border-radius: 14px; background: #2a2420; }
+  .pod__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+  .pod__fmt { position: absolute; top: 8px; left: 8px; z-index: 1; padding: 3px 9px; border-radius: 999px; background: rgba(17,17,19,.72); color: #fff; font-size: .68rem; font-weight: 600; backdrop-filter: blur(4px); }
+  .pod__play { position: absolute; right: 8px; bottom: 8px; z-index: 1; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--accent); color: #fff; opacity: 0; transform: scale(.8); transition: opacity .2s, transform .2s; }
+  .pod__play svg { width: 14px; height: 14px; margin-left: 2px; }
+  .pod__ep:hover .pod__play, .pod__ep:focus-visible .pod__play { opacity: 1; transform: scale(1); }
+  .pod__guest { display: block; margin: 11px 5px 0; font-size: .72rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--accent-deep); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .pod__title { display: block; margin: 3px 5px 2px; overflow: hidden; font-size: .98rem; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; text-overflow: ellipsis; }
+  .pod__meta { display: block; margin: 0 5px; color: var(--muted); font-size: .76rem; }
+
+  /* subscribe strip */
+  .pod__platforms {
+    display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 12px clamp(22px, 4vw, 44px);
+    max-width: 900px; margin: 0 auto; padding: 0 var(--gutter); color: var(--muted);
+  }
+  .pod__on { font-size: .8rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; }
+  .pod__platforms a { display: inline-flex; align-items: center; gap: 8px; font-size: 1.02rem; font-weight: 600; color: var(--ink-2); transition: color .2s; }
+  .pod__platforms a:hover { color: var(--accent-deep); }
+  .pod__platforms svg { width: 24px; height: 24px; color: var(--accent); }
+</style>
+
+<script>
+  (function () {
+    const stage = document.querySelector<HTMLElement>('[data-pod-stage]');
+    const path = document.querySelector<SVGPathElement>('[data-pod-path]');
+    if (!stage || !path) return;
+    const svg = path.parentNode as SVGSVGElement;
+    const originals = Array.from(stage.querySelectorAll<HTMLElement>('.pod__ep'));
+    if (!originals.length) return;
+    const cards = originals.slice();
+
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const DRIFT_SPEED = 14; // px per second; 0 = no auto movement
+    const STRING_TOP = 34;  // where the string meets the screen edge
+
+    let width = 0, half = 0, sag = 0, cardW = 0, spacing = 0, total = 0;
+    let offset = 0, target: number | null = null, swing = 0, lastOffset = 0, started = false;
+    let hovering = false, focused = false, inView = true;
+
+    // Hide a thumbnail whose file is missing; the dark card background shows instead
+    stage.addEventListener('error', (e) => { const t = e.target as HTMLElement; if (t.tagName === 'IMG') t.style.display = 'none'; }, true);
+
+    function addClonesIfNeeded() {
+      const needed = width + cardW * 3;
+      while (cards.length * spacing < needed) {
+        originals.forEach((card) => {
+          const copy = card.cloneNode(true) as HTMLElement;
+          copy.setAttribute('aria-hidden', 'true');
+          copy.setAttribute('tabindex', '-1');
+          stage!.appendChild(copy);
+          cards.push(copy);
+        });
+      }
+    }
+
+    function measure() {
+      width = stage!.clientWidth;
+      half = width / 2;
+      cardW = originals[0].offsetWidth;
+      spacing = cardW * 1.2;
+      sag = Math.min(90, Math.max(46, width * 0.075));
+      addClonesIfNeeded();
+      total = cards.length * spacing;
+      if (!started) {
+        offset = total / 2 - Math.floor(originals.length / 2) * spacing;
+        lastOffset = offset;
+        started = true;
+      }
+      const bottomOfString = STRING_TOP + sag;
+      const height = bottomOfString + originals[0].offsetHeight + 62;
+      stage!.style.height = height + 'px';
+      stage!.style.marginTop = (46 - bottomOfString) + 'px';
+      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      path!.setAttribute('d', `M0 ${STRING_TOP} Q${half} ${STRING_TOP + sag * 2} ${width} ${STRING_TOP}`);
+    }
+
+    function positionFromCentre(index: number) {
+      let p = (index * spacing + offset) % total;
+      if (p < 0) p += total;
+      return p - total / 2;
+    }
+
+    let lastTime = 0;
+    function frame(time: number) {
+      const dt = Math.min((time - lastTime) / 1000 || 0, 0.05);
+      lastTime = time;
+      if (inView) {
+        if (target !== null && !dragging) {
+          offset += (target - offset) * Math.min(1, dt * 7);
+          if (Math.abs(target - offset) < 0.5) target = null;
+        } else if (!dragging && !hovering && !focused && !reduceMotion) {
+          offset += DRIFT_SPEED * dt;
+        }
+        const speed = (offset - lastOffset) / (dt || 0.016);
+        lastOffset = offset;
+        swing += (Math.max(-8, Math.min(8, speed * 0.018)) - swing) * Math.min(1, dt * 5);
+        cards.forEach((card, i) => {
+          const x = positionFromCentre(i);
+          const y = STRING_TOP + sag * (1 - (x / half) * (x / half));
+          let angle = Math.atan((-2 * sag * x) / (half * half)) * (180 / Math.PI) * 0.85;
+          angle = Math.max(-16, Math.min(16, angle));
+          if (!reduceMotion) angle += Math.sin(time / 1300 + i * 1.7) * 0.7;
+          angle -= swing;
+          card.style.transform = `translate3d(${half + x - cardW / 2}px,${y}px,0) rotate(${angle}deg)`;
+        });
+      }
+      requestAnimationFrame(frame);
+    }
+
+    // drag
+    let dragging = false, pressed = false, moved = false, startX = 0, startOffset = 0;
+    stage.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;
+      pressed = true; moved = false; startX = e.clientX; startOffset = offset; target = null;
+    });
+    stage.addEventListener('pointermove', (e) => {
+      if (!pressed) return;
+      const dx = e.clientX - startX;
+      if (!moved && Math.abs(dx) > 6) {
+        moved = true; dragging = true;
+        stage.classList.add('is-dragging');
+        stage.setPointerCapture(e.pointerId);
+      }
+      if (dragging) offset = startOffset + dx;
+    });
+    const release = () => { pressed = false; dragging = false; stage.classList.remove('is-dragging'); };
+    stage.addEventListener('pointerup', release);
+    stage.addEventListener('pointercancel', release);
+    stage.addEventListener('click', (e) => { if (moved) { e.preventDefault(); moved = false; } });
+    stage.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') hovering = true; });
+    stage.addEventListener('pointerleave', () => { hovering = false; });
+
+    // keyboard: tabbing to a card brings it to the centre
+    stage.addEventListener('focusin', (e) => {
+      const card = (e.target as HTMLElement).closest<HTMLElement>('.pod__ep');
+      if (!card || !card.matches(':focus-visible')) return;
+      focused = true;
+      target = offset - positionFromCentre(cards.indexOf(card));
+    });
+    stage.addEventListener('focusout', () => { focused = false; });
+
+    // pause off-screen
+    new IntersectionObserver((en) => { inView = en[0].isIntersecting; }).observe(stage);
+
+    addEventListener('resize', measure);
+    addEventListener('load', measure);
+    document.fonts?.ready.then(measure);
+    measure();
+    requestAnimationFrame(frame);
+  })();
+</script>
