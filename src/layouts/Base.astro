@@ -6,8 +6,8 @@ import LiquidLoader from '../components/LiquidLoader.astro';
 import { site } from '../data/site';
 
 /** Every page passes its own title, meta description and Open Graph image (Read Me, rule 3). */
-interface Props { title: string; description: string; ogImage?: string; type?: 'website' | 'article' }
-const { title, description, ogImage = '/og/default.png', type = 'website' } = Astro.props;
+interface Props { title: string; description: string; ogImage?: string; type?: 'website' | 'article'; noindex?: boolean }
+const { title, description, ogImage = '/og/default.png', type = 'website', noindex = false } = Astro.props;
 const fullTitle = title === site.name ? `${site.name}: ${site.descriptor.replace(/\.$/, '')}` : `${title} · ${site.name}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const og = new URL(ogImage, Astro.site);
@@ -19,6 +19,7 @@ const og = new URL(ogImage, Astro.site);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="canonical" href={canonical} />
     <meta property="og:type" content={type} />
     <meta property="og:title" content={fullTitle} />
